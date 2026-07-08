@@ -121,16 +121,6 @@
 
   .scrollbar-none::-webkit-scrollbar{ display:none; }
 
-  input[type="file"]::file-selector-button{
-    font-family:'Space Grotesk',sans-serif;
-    background:rgba(var(--cyan),0.15);
-    color:rgb(var(--cyan));
-    border:1px solid rgba(var(--cyan),0.4);
-    border-radius:8px; padding:6px 12px; margin-right:12px; cursor:pointer;
-    transition:background .2s ease;
-  }
-  input[type="file"]::file-selector-button:hover{ background:rgba(var(--cyan),0.28); }
-
   .toggle-track{ transition:background .3s ease; }
   .toggle-knob{ transition:transform .35s cubic-bezier(.2,.8,.2,1); }
 
@@ -143,8 +133,19 @@
   }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
+  .btn-read-pdf{
+    background:linear-gradient(135deg, #34e08a, #16a34a);
+    color:#04170B;
+    box-shadow:0 0 0 1px rgba(52,224,138,0.4), 0 0 18px -4px rgba(52,224,138,0.7);
+    animation:pulseGreen 2.6s ease-in-out infinite;
+  }
+  @keyframes pulseGreen{
+    0%,100%{ box-shadow:0 0 0 1px rgba(52,224,138,0.4), 0 0 16px -4px rgba(52,224,138,0.6); }
+    50%{ box-shadow:0 0 0 1px rgba(52,224,138,0.6), 0 0 30px -2px rgba(52,224,138,0.9); }
+  }
+
   @media (prefers-reduced-motion: reduce){
-    .equation-drift, .infinity-electron, .pulse-glow, .animate-in{ animation:none !important; }
+    .equation-drift, .infinity-electron, .pulse-glow, .animate-in, .btn-read-pdf{ animation:none !important; }
   }
 </style>
 </head>
@@ -192,7 +193,7 @@
     </div>
     <div class="max-w-7xl mx-auto mt-2 font-mono text-[11px] sm:text-xs flex flex-wrap gap-x-4 gap-y-1" style="color:var(--muted);">
       <span>📞 01521414727</span>
-      <span>✉ rakib.cuet27@gmail.com</span>
+      <span>✉️ rakib.cuet27@gmail.com</span>
     </div>
   </header>
 
@@ -226,12 +227,12 @@
   <!-- ============ ADMIN PANEL ============ -->
   <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 pb-10">
     <button id="adminToggle" class="w-full glass glow-border rounded-2xl px-5 py-4 flex items-center justify-between font-head font-600 text-sm sm:text-base">
-      <span class="flex items-center gap-2">🔐 Teacher Panel — Upload Book PDFs</span>
+      <span class="flex items-center gap-2">🔐 Teacher Panel — Add Book Links</span>
       <span id="adminChevron" class="transition-transform text-lg">⌄</span>
     </button>
 
     <div id="adminPanel" class="glass rounded-2xl mt-3 p-5 sm:p-7 hidden animate-in">
-      <p class="text-xs sm:text-sm mb-5" style="color:var(--muted);">Select the exact version, language, and book category, then upload the PDF. It publishes instantly to every student viewing this app. Files are stored via the app's shared storage, so uploads persist for everyone.</p>
+      <p class="text-xs sm:text-sm mb-5" style="color:var(--muted);">Select the exact version, language, and book category, then paste a Google Drive or cloud link to preview it live in this browser. To make it visible to every student on GitHub Pages, copy the link into the <code>BOOK_LINKS</code> object at the top of the script — full instructions are in the code comments there.</p>
 
       <div class="grid sm:grid-cols-3 gap-4">
         <div>
@@ -255,18 +256,24 @@
       </div>
 
       <div class="mt-5">
-        <label class="font-mono text-xs block mb-2" style="color:var(--muted);">PDF File</label>
-        <input id="adminFile" type="file" accept="application/pdf" class="w-full text-sm font-mono" style="color:var(--muted);">
+        <label class="font-mono text-xs block mb-2" style="color:var(--muted);">Paste Google Drive or Cloud Link here</label>
+        <input id="adminLink" type="url" placeholder="https://drive.google.com/file/d/xxxxxxxx/view?usp=sharing"
+               class="w-full glass rounded-lg px-4 py-3 text-sm font-mono outline-none" style="color:var(--text);">
+        <p class="font-mono text-[10px] mt-2" style="color:var(--muted);">Tip: in Google Drive, right-click the PDF → Share → "Anyone with the link" → Viewer, then paste that link here.</p>
       </div>
 
       <div class="mt-5 flex items-center gap-4 flex-wrap">
         <button id="uploadBtn" class="pulse-glow font-head font-600 text-sm px-6 py-3 rounded-xl" style="background:linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet))); color:#04050A;">
-          Upload & Publish
+          Preview This Link
         </button>
         <button id="removeBtn" class="font-head font-600 text-sm px-6 py-3 rounded-xl glass" style="color:var(--muted);">
-          Remove current PDF for this slot
+          Clear preview for this slot
         </button>
         <span id="uploadStatus" class="font-mono text-xs"></span>
+      </div>
+
+      <div class="mt-5 rounded-xl p-4 font-mono text-[11px] leading-relaxed" style="background:rgba(var(--amber),0.08); border:1px solid rgba(var(--amber),0.3); color:var(--muted);">
+        ⚠️ <strong style="color:rgb(var(--amber));">Important for GitHub Pages:</strong> this panel only previews the link in <em>your</em> browser right now — it does not publish to other students, since GitHub Pages has no server or database. To make a book permanently visible to every student worldwide, copy the link and paste it directly into the <code>BOOK_LINKS</code> object near the top of the <code>&lt;script&gt;</code> section in this HTML file, then re-upload the file to GitHub. See the comments there for exact instructions.
       </div>
     </div>
   </section>
@@ -296,6 +303,80 @@ const CATEGORIES = [
 ];
 
 const EQUATIONS = ["E = mc²","F = ma","λ = h/p","ΔxΔp ≥ ħ/2","∇ × E = −∂B/∂t","v = u + at","PV = nRT","q = mcΔT","F = kx","c = fλ","W = Fd cosθ"];
+
+/* ======================================================================
+   📌 BOOK_LINKS — THIS IS WHERE SIR PASTES THE REAL PDF LINKS.
+   ======================================================================
+   This app is hosted on GitHub Pages, which is STATIC hosting — there is
+   no server or database, so a file chosen in a browser can never sync to
+   other students' devices. The reliable fix is: host each PDF somewhere
+   public (Google Drive, Dropbox, OneDrive, etc.) and paste the shareable
+   link into this object. Because this object lives directly in the HTML
+   file, once you commit + push it to GitHub, EVERY student who opens the
+   site — on any device, anywhere in the world — sees the same links
+   instantly. No login, no sync, no backend needed.
+
+   HOW TO ADD A LINK, STEP BY STEP:
+   1. Upload the PDF to Google Drive (or Dropbox / OneDrive).
+   2. Right-click the file → Share → change access to
+      "Anyone with the link" → set role to "Viewer" → Copy link.
+   3. Find the matching slot below (version → language → book slug)
+      and paste the link between the quotes, replacing "".
+      Example:
+        "basic-book": "https://drive.google.com/file/d/1AbCдEfG/view?usp=sharing",
+   4. Save this file and re-upload / push it to your GitHub repository.
+   5. That book's card will automatically switch to a glowing green
+      "Read PDF" button for every visitor — no other changes needed.
+
+   The 7 book slugs are fixed (they match the CATEGORIES list above):
+   "basic-book", "concept-book", "short-math-mcq", "mcq-booster",
+   "cq-booster", "mega-suggestion", "foundation-book".
+
+   Leave a slot as "" (empty string) if that book isn't ready yet — its
+   card will simply show "Not uploaded yet" until you fill it in.
+   ====================================================================== */
+const BOOK_LINKS = {
+  hsc: {
+    bangla: {
+      "basic-book":      "",   // 👉 paste HSC · Bangla · Basic Book link here
+      "concept-book":    "",   // 👉 paste HSC · Bangla · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste HSC · Bangla · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste HSC · Bangla · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste HSC · Bangla · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste HSC · Bangla · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste HSC · Bangla · Foundation Book link here
+    },
+    english: {
+      "basic-book":      "",   // 👉 paste HSC · English · Basic Book link here
+      "concept-book":    "",   // 👉 paste HSC · English · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste HSC · English · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste HSC · English · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste HSC · English · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste HSC · English · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste HSC · English · Foundation Book link here
+    }
+  },
+  ssc: {
+    bangla: {
+      "basic-book":      "",   // 👉 paste SSC · Bangla · Basic Book link here
+      "concept-book":    "",   // 👉 paste SSC · Bangla · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste SSC · Bangla · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste SSC · Bangla · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste SSC · Bangla · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste SSC · Bangla · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste SSC · Bangla · Foundation Book link here
+    },
+    english: {
+      "basic-book":      "",   // 👉 paste SSC · English · Basic Book link here
+      "concept-book":    "",   // 👉 paste SSC · English · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste SSC · English · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste SSC · English · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste SSC · English · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste SSC · English · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste SSC · English · Foundation Book link here
+    }
+  }
+};
 
 let state = { version:"hsc", lang:"bangla" };
 
@@ -410,23 +491,9 @@ document.querySelectorAll('.lang-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{ state.lang = btn.dataset.lang; styleVersionButtons(); renderBooks(); });
 });
 
-/* ================= STORAGE HELPERS ================= */
+/* ================= STORAGE HELPERS (session-only preview links) ================= */
 function storageKey(version, lang, slug){
-  return `pdf:${version}:${lang}:${slug}`;
-}
-
-async function getPdfRecord(key){
-  const raw = await safeStorage.get(key, true);
-  if(!raw) return null;
-  try{ return JSON.parse(raw); }catch(e){ return null; }
-}
-
-async function setPdfRecord(key, record){
-  return safeStorage.set(key, JSON.stringify(record), true);
-}
-
-async function deletePdfRecord(key){
-  await safeStorage.delete(key, true);
+  return pdf:${version}:${lang}:${slug};
 }
 
 /* ================= BOOK GRID ================= */
@@ -448,20 +515,29 @@ async function renderBooks(){
     </div>
   `).join('');
 
-  // populate each card's action area asynchronously
+  // populate each card's action area
   for(const c of CATEGORIES){
-    const key = storageKey(state.version, state.lang, c.slug);
-    const record = await getPdfRecord(key);
-    const cardEl = grid.querySelector(`[data-slug="${c.slug}"] .card-action`);
+    const cardEl = grid.querySelector([data-slug="${c.slug}"] .card-action);
     if(!cardEl) continue;
-    if(record && record.dataUrl){
+
+    // 1) permanent, hardcoded link (works for every visitor worldwide)
+    let link = (BOOK_LINKS[state.version] && BOOK_LINKS[state.version][state.lang] && BOOK_LINKS[state.version][state.lang][c.slug]) || "";
+    let isPreview = false;
+
+    // 2) fall back to a session-only preview link entered in the admin panel
+    if(!link){
+      const key = storageKey(state.version, state.lang, c.slug);
+      const previewLink = await safeStorage.get(key, false);
+      if(previewLink){ link = previewLink; isPreview = true; }
+    }
+
+    if(link){
       cardEl.innerHTML = `
-        <a href="${record.dataUrl}" download="${record.filename || (c.name+'.pdf')}"
-           class="block text-center font-head font-600 text-sm px-4 py-3 rounded-xl"
-           style="background:linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet))); color:#04050A;">
-          📄 Download / View PDF
+        <a href="${link}" target="_blank" rel="noopener noreferrer"
+           class="btn-read-pdf block text-center font-head font-600 text-sm px-4 py-3 rounded-xl">
+          📗 Read PDF
         </a>
-        <p class="font-mono text-[10px] mt-2 text-center truncate" style="color:var(--muted);">${record.filename || 'uploaded.pdf'}</p>
+        ${isPreview ? <p class="font-mono text-[10px] mt-2 text-center" style="color:rgb(var(--amber));">Preview only — hardcode this link in BOOK_LINKS to publish it</p> : ``}
       `;
     } else {
       cardEl.innerHTML = `
@@ -483,65 +559,46 @@ adminToggle.addEventListener('click', ()=>{
 });
 
 const adminCategory = document.getElementById('adminCategory');
-adminCategory.innerHTML = CATEGORIES.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+adminCategory.innerHTML = CATEGORIES.map(c => <option value="${c.slug}">${c.name}</option>).join('');
 
 const uploadBtn = document.getElementById('uploadBtn');
 const removeBtn = document.getElementById('removeBtn');
 const uploadStatus = document.getElementById('uploadStatus');
-const adminFile = document.getElementById('adminFile');
+const adminLink = document.getElementById('adminLink');
 
-function fileToDataUrl(file){
-  return new Promise((resolve, reject)=>{
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('Could not read file'));
-    reader.readAsDataURL(file);
-  });
+function isLikelyValidUrl(str){
+  try{ const u = new URL(str); return u.protocol === 'http:' || u.protocol === 'https:'; }
+  catch(e){ return false; }
 }
 
 uploadBtn.addEventListener('click', async ()=>{
   const version = document.getElementById('adminVersion').value;
   const lang = document.getElementById('adminLang').value;
   const slug = adminCategory.value;
-  const file = adminFile.files[0];
+  const link = adminLink.value.trim();
 
-  if(!file){
-    uploadStatus.textContent = "Choose a PDF file first.";
+  if(!link){
+    uploadStatus.textContent = "Paste a link first.";
     uploadStatus.style.color = "rgb(var(--amber))";
     return;
   }
-  if(file.type !== 'application/pdf'){
-    uploadStatus.textContent = "Only PDF files are allowed.";
-    uploadStatus.style.color = "rgb(var(--amber))";
-    return;
-  }
-  if(file.size > 4.5 * 1024 * 1024){
-    uploadStatus.textContent = "File too large — please keep PDFs under ~4.5MB.";
+  if(!isLikelyValidUrl(link)){
+    uploadStatus.textContent = "That doesn't look like a valid link.";
     uploadStatus.style.color = "rgb(var(--amber))";
     return;
   }
 
-  uploadStatus.textContent = "Uploading...";
+  uploadStatus.textContent = "Loading preview...";
   uploadStatus.style.color = "var(--muted)";
   uploadBtn.disabled = true;
 
-  try{
-    const dataUrl = await fileToDataUrl(file);
-    const key = storageKey(version, lang, slug);
-    const record = { filename:file.name, dataUrl, uploadedAt:new Date().toISOString() };
-    const result = await setPdfRecord(key, record);
-    if(!result) throw new Error('Storage write failed');
-    uploadStatus.textContent = `Published to ${version.toUpperCase()} · ${lang}.`;
-    uploadStatus.style.color = "rgb(var(--cyan))";
-    adminFile.value = "";
-    if(version === state.version && lang === state.lang) renderBooks();
-  }catch(e){
-    console.error(e);
-    uploadStatus.textContent = "Upload failed. Please try again.";
-    uploadStatus.style.color = "rgb(var(--amber))";
-  }finally{
-    uploadBtn.disabled = false;
-  }
+  const key = storageKey(version, lang, slug);
+  await safeStorage.set(key, link, false);
+
+  uploadStatus.textContent = Previewing in ${version.toUpperCase()} · ${lang}. Hardcode this link in BOOK_LINKS to publish it for everyone.;
+  uploadStatus.style.color = "rgb(var(--cyan))";
+  uploadBtn.disabled = false;
+  if(version === state.version && lang === state.lang) renderBooks();
 });
 
 removeBtn.addEventListener('click', async ()=>{
@@ -549,8 +606,9 @@ removeBtn.addEventListener('click', async ()=>{
   const lang = document.getElementById('adminLang').value;
   const slug = adminCategory.value;
   const key = storageKey(version, lang, slug);
-  await deletePdfRecord(key);
-  uploadStatus.textContent = "Removed.";
+  await safeStorage.delete(key, false);
+  adminLink.value = "";
+  uploadStatus.textContent = "Preview cleared.";
   uploadStatus.style.color = "var(--muted)";
   if(version === state.version && lang === state.lang) renderBooks();
 });
