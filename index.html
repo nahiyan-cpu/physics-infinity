@@ -6,7 +6,9 @@
     <title>Physics Infinity | Rakib Hasan (Sir)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -16,13 +18,35 @@
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
                         display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        physics: {
+                            cyan: '#06b6d4',
+                            blue: '#3b82f6',
+                            purple: '#a855f7',
+                            darkBg: '#0f172a',
+                            darkCard: 'rgba(30, 41, 59, 0.7)',
+                            lightBg: '#f8fafc',
+                            lightCard: 'rgba(255, 255, 255, 0.85)',
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 15px rgba(6, 182, 212, 0.4)',
+                        'neon-purple': '0 0 15px rgba(168, 85, 247, 0.4)',
                     }
                 }
             }
         }
     </script>
+
     <style>
-        body { transition: background-color 0.3s, color 0.3s; }
+        body {
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glassmorphism {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
         .animated-bg {
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #0f172a);
             background-size: 400% 400%;
@@ -35,88 +59,124 @@
         }
     </style>
 </head>
-<body class="animated-bg dark:text-slate-100 text-slate-800 font-sans min-h-screen pb-12">
+<body class="animated-bg dark:text-slate-100 text-slate-800 font-sans min-h-screen selection:bg-cyan-500 selection:text-white flex flex-col justify-between">
 
-    <div class="max-w-6xl mx-auto px-4 py-6 relative z-10">
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-30 dark:opacity-40">
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-500/10 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-500/10 blur-[120px]"></div>
+    </div>
+
+    <div class="relative z-10 max-w-6xl w-full mx-auto px-4 py-6 md:py-10 flex flex-col flex-grow">
         
-        <header class="bg-white/90 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl mb-8">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header class="glassmorphism bg-physics-lightCard dark:bg-physics-darkCard border border-slate-200/60 dark:border-slate-700/50 rounded-3xl p-6 md:p-8 shadow-xl mb-8 transform transition-all duration-300 hover:border-cyan-500/30">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-2 rounded-xl text-white">
-                            <i class="fa-solid fa-atom text-xl animate-spin [animation-duration:15s]"></i>
+                        <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-2.5 rounded-2xl shadow-neon-cyan text-white flex items-center justify-center">
+                            <i class="fa-solid fa-atom text-2xl animate-spin [animation-duration:12s]"></i>
                         </div>
-                        <h1 class="font-display text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                        <h1 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
                             Physics Infinity
                         </h1>
                     </div>
-                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    <p class="text-sm md:text-base font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
                         <i class="fa-solid fa-graduation-cap text-cyan-500"></i> Mentor: Rakib Hasan (Sir)
                     </p>
-                    <div class="flex flex-wrap gap-3 mt-3 text-xs text-slate-500 dark:text-slate-400">
-                        <span class="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full"><i class="fa-solid fa-phone text-emerald-500"></i> 01521414727</span>
-                        <span class="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full"><i class="fa-solid fa-envelope text-purple-400"></i> rakib.cuet27@gmail.com</span>
+                    
+                    <div class="flex flex-wrap gap-3 mt-4 text-xs md:text-sm text-slate-500 dark:text-slate-400">
+                        <a href="tel:01521414727" class="flex items-center gap-2 hover:text-cyan-500 transition-colors bg-slate-100/80 dark:bg-slate-800/60 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
+                            <i class="fa-solid fa-phone text-emerald-500"></i> 01521414727
+                        </a>
+                        <a href="mailto:rakib.cuet27@gmail.com" class="flex items-center gap-2 hover:text-purple-500 transition-colors bg-slate-100/80 dark:bg-slate-800/60 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
+                            <i class="fa-solid fa-envelope text-purple-400"></i> rakib.cuet27@gmail.com
+                        </a>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <button onclick="toggleAdminPanel(true)" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow-md">
+                <div class="flex items-center gap-3 self-end md:self-center">
+                    <button onclick="toggleAdminPanel(true)" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500 hover:to-blue-500 hover:text-white transition-all duration-300 cursor-pointer shadow-sm">
                         <i class="fa-solid fa-user-shield"></i> Teacher Panel
                     </button>
-                    <button onclick="toggleTheme()" class="bg-slate-100 dark:bg-slate-700 p-2.5 rounded-xl text-slate-600 dark:text-slate-300">
-                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                    <button onclick="toggleTheme()" class="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors" aria-label="Toggle System Layout Theme">
+                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-        <section class="mb-8 bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl max-w-2xl mx-auto shadow-md">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="grid grid-cols-2 gap-2">
-                    <button id="btn-hsc" onclick="updateSelection('version', 'HSC')" class="py-2 px-3 font-bold text-xs rounded-lg transition-all bg-gradient-to-r from-cyan-500 to-blue-500 text-white">HSC Version</button>
-                    <button id="btn-ssc" onclick="updateSelection('version', 'SSC')" class="py-2 px-3 font-bold text-xs rounded-lg transition-all bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">SSC Version</button>
+        <section class="mb-8">
+            <div class="text-center mb-6">
+                <span class="text-xs font-bold tracking-widest text-cyan-500 uppercase bg-cyan-500/10 dark:bg-cyan-500/20 px-3 py-1 rounded-full">Dashboard Filter Matrix</span>
+                <h2 class="text-xl md:text-2xl font-bold font-display mt-2 dark:text-white text-slate-900">Select Academic Stream</h2>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-2xl max-w-2xl mx-auto border border-slate-300/40 dark:border-slate-800 glassmorphism shadow-inner">
+                <div class="grid grid-cols-2 gap-1.5 w-full sm:w-1/2">
+                    <button id="btn-hsc" onclick="updateActiveSelection('version', 'HSC')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
+                        HSC Version
+                    </button>
+                    <button id="btn-ssc" onclick="updateActiveSelection('version', 'SSC')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40">
+                        SSC Version
+                    </button>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <button id="btn-bangla" onclick="updateSelection('medium', 'Bangla')" class="py-2 px-3 font-bold text-xs rounded-lg transition-all bg-gradient-to-r from-purple-500 to-indigo-500 text-white">Bangla Medium</button>
-                    <button id="btn-english" onclick="updateSelection('medium', 'English')" class="py-2 px-3 font-bold text-xs rounded-lg transition-all bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">English Medium</button>
+                <div class="h-px sm:h-8 w-full sm:w-px bg-slate-300 dark:bg-slate-700 hidden sm:block"></div>
+                <div class="grid grid-cols-2 gap-1.5 w-full sm:w-1/2">
+                    <button id="btn-bangla" onclick="updateActiveSelection('medium', 'Bangla')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
+                        Bangla Medium
+                    </button>
+                    <button id="btn-english" onclick="updateActiveSelection('medium', 'English')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40">
+                        English Medium
+                    </button>
                 </div>
             </div>
-            <p class="text-center text-xs text-slate-400 mt-3 font-medium">
-                Active Catalog: <span id="current-badge" class="text-cyan-400 font-bold">HSC - Bangla Medium</span>
-            </p>
+            
+            <div class="text-center mt-4">
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    Active Catalog Matrix: <span id="current-badge" class="font-bold text-cyan-500 bg-cyan-500/10 dark:bg-cyan-500/20 px-2 py-0.5 rounded ml-1">HSC - Bangla Medium</span>
+                </p>
+            </div>
         </section>
 
-        <main class="mb-12 block clear-both opacity-100 min-h-[400px]">
+        <main class="mb-12 flex-grow">
             <div id="books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 </div>
         </main>
 
-        <section id="admin-panel" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-6 relative">
-                <div class="flex justify-between items-center mb-4 border-b dark:border-slate-800 pb-2">
-                    <h3 class="text-lg font-bold dark:text-white text-slate-900"><i class="fa-solid fa-server text-cyan-500 mr-2"></i>Upload Center</h3>
-                    <button onclick="toggleAdminPanel(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <section id="admin-panel" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-300">
+            <div class="glassmorphism bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl p-6 relative transform scale-100">
+                
+                <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-4 mb-6">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
+                        <i class="fa-solid fa-server text-lg text-cyan-500"></i>
+                        <h3 class="font-display text-xl font-bold dark:text-white text-slate-900">Resource Infrastructure Portal</h3>
+                    </div>
+                    <button onclick="toggleAdminPanel(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
                 </div>
-                <form id="upload-form" onsubmit="commitUpload(event)" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-2">
+
+                <form id="upload-form" onsubmit="commitUpload(event)" class="space-y-5">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Class</label>
-                            <select id="upload-version" class="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg text-xs dark:text-white">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Target Class</label>
+                            <select id="upload-version" class="w-full bg-slate-50 dark:bg-slate-800 dark:text-white text-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 transition-colors">
                                 <option value="HSC">HSC Version</option>
                                 <option value="SSC">SSC Version</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Medium</label>
-                            <select id="upload-medium" class="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg text-xs dark:text-white">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Target Medium</label>
+                            <select id="upload-medium" class="w-full bg-slate-50 dark:bg-slate-800 dark:text-white text-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 transition-colors">
                                 <option value="Bangla">Bangla Medium</option>
                                 <option value="English">English Medium</option>
                             </select>
                         </div>
                     </div>
+
                     <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Book Category</label>
-                        <select id="upload-category" class="w-full bg-slate-100 dark:bg-slate-800 p-2.5 rounded-lg text-xs dark:text-white">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Book Category Track</label>
+                        <select id="upload-category" class="w-full bg-slate-50 dark:bg-slate-800 dark:text-white text-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 transition-colors">
                             <option value="basic">Basic Book</option>
                             <option value="concept">Concept Book</option>
                             <option value="shortmath">Short Math (MCQ) Book</option>
@@ -126,155 +186,292 @@
                             <option value="foundation">Foundation Book</option>
                         </select>
                     </div>
+
                     <div>
-                        <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Select PDF File</label>
-                        <input type="file" id="upload-file" accept=".pdf" required class="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Binary Payload (PDF File)</label>
+                        <div class="relative group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors bg-slate-50/50 dark:bg-slate-800/30">
+                            <input type="file" id="upload-file" accept=".pdf" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                            <div class="space-y-2 pointer-events-none">
+                                <i class="fa-solid fa-file-pdf text-4xl text-slate-400 group-hover:text-red-400 transition-colors"></i>
+                                <p class="text-sm font-semibold text-slate-700 dark:text-slate-300" id="file-name-display">Click to map file vector stream</p>
+                                <p class="text-[11px] text-slate-400">Strict System File Validation Limit: ~20MB</p>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold text-xs py-3 rounded-lg uppercase tracking-wider">Push to App Grid</button>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="clearSpecificTrack()" class="w-1/3 bg-slate-100 dark:bg-slate-800 hover:bg-red-500 dark:hover:bg-red-600 text-slate-600 dark:text-slate-300 hover:text-white dark:hover:text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all">
+                            Reset Track
+                        </button>
+                        <button type="submit" class="w-2/3 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-lg hover:opacity-95 transition-all transform active:scale-[0.98]">
+                            Push Update to Grid
+                        </button>
+                    </div>
                 </form>
             </div>
         </section>
 
-        <footer class="text-center text-[11px] text-slate-500 border-t dark:border-slate-800/80 pt-4 mt-6">
-            <p>&copy; 2026 Physics Infinity | Rakib Hasan (Sir)</p>
+        <footer class="mt-auto border-t border-slate-200/60 dark:border-slate-800/60 pt-6 text-center text-xs text-slate-400 dark:text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 Physics Infinity. Developed and Structured under guidance of Rakib Hasan (Sir).</p>
+            <div class="flex gap-4 font-medium">
+                <span class="hover:text-cyan-500 transition-colors cursor-pointer"><i class="fa-solid fa-user-shield"></i> Security Policy</span>
+                <span onclick="toggleAdminPanel(true)" class="hover:text-cyan-500 transition-colors cursor-pointer text-slate-500 dark:text-slate-300 font-bold"><i class="fa-solid fa-code-branch"></i> Core Control System</span>
+            </div>
         </footer>
+
     </div>
 
     <script>
-        const categories = [
-            { id: 'basic', name: 'Basic Book', icon: 'fa-book-open-reader', color: 'from-cyan-500 to-blue-600' },
-            { id: 'concept', name: 'Concept Book', icon: 'fa-brain', color: 'from-blue-500 to-indigo-600' },
-            { id: 'shortmath', name: 'Short Math (MCQ) Book', icon: 'fa-calculator', color: 'from-purple-500 to-pink-600' },
-            { id: 'mcqbooster', name: 'MCQ Booster', icon: 'fa-rocket', color: 'from-amber-500 to-orange-600' },
-            { id: 'cqbooster', name: 'CQ Booster', icon: 'fa-shield-cat', color: 'from-emerald-500 to-teal-600' },
-            { id: 'suggestions', name: 'Mega / Suggestions', icon: 'fa-fire-flame-curved', color: 'from-rose-500 to-red-600' },
-            { id: 'foundation', name: 'Foundation Book', icon: 'fa-building-columns', color: 'from-indigo-500 to-purple-600' }
+        // Exact 7 Category Core Array Dataset System Mapping Layout
+        const targetBookCategories = [
+            { id: 'basic', name: 'Basic Book', icon: 'fa-book-open-reader', color: 'from-cyan-500 to-blue-600', desc: 'Comprehensive conceptual physics framework and theory breakdowns.' },
+            { id: 'concept', name: 'Concept Book', icon: 'fa-brain', color: 'from-blue-500 to-indigo-600', desc: 'Advanced engineering and analytical conceptual mapping.' },
+            { id: 'shortmath', name: 'Short Math (MCQ) Book', icon: 'fa-calculator', color: 'from-purple-500 to-pink-600', desc: 'Tricks, shortcuts, and mathematical deduction algorithms.' },
+            { id: 'mcqbooster', name: 'MCQ Booster', icon: 'fa-rocket', color: 'from-amber-500 to-orange-600', desc: 'High-yield competitive problem sets optimized for quick solution times.' },
+            { id: 'cqbooster', name: 'CQ Booster', icon: 'fa-shield-cat', color: 'from-emerald-500 to-teal-600', desc: 'Structured analytics for board/admission creative questions.' },
+            { id: 'suggestions', name: 'Mega / Suggestions', icon: 'fa-fire-flame-curved', color: 'from-rose-500 to-red-600', desc: 'Highly curated target parameters for upcoming examinations.' },
+            { id: 'foundation', name: 'Foundation Book', icon: 'fa-building-columns', color: 'from-indigo-500 to-purple-600', desc: 'Core operational physics axioms for foundational mastery.' }
         ];
 
-        let state = { version: 'HSC', medium: 'Bangla' };
-        let db = {};
+        // Reactive Application Environment Variables
+        let activeAppState = {
+            version: 'HSC',
+            medium: 'Bangla'
+        };
 
-        // Run immediately when script loads to bypass rendering blocks
-        function initApp() {
-            const raw = localStorage.getItem('physics_infinity_db');
-            if (raw) { try { db = JSON.parse(raw); } catch(e) { db = {}; } }
-            
-            // Check Theme
-            if (localStorage.getItem('theme-matrix') === 'light') {
+        // Binary Vector Registry Storage Object Map instantiation
+        let appLocalDatabase = {};
+
+        // Application Lifecyle Core Initialization Node
+        window.addEventListener('DOMContentLoaded', () => {
+            syncLocalStorageMatrix();
+            applyThemeStateOnLoad();
+            refreshSystemUI();
+            registerDomListeners();
+        });
+
+        function syncLocalStorageMatrix() {
+            const rawData = localStorage.getItem('physics_infinity_db');
+            if (rawData) {
+                try {
+                    appLocalDatabase = JSON.parse(rawData);
+                } catch(e) {
+                    console.error("Corrupted database format found. Resetting database node layout.");
+                    appLocalDatabase = {};
+                }
+            }
+        }
+
+        function applyThemeStateOnLoad() {
+            const explicitUserPreference = localStorage.getItem('theme-matrix');
+            if (explicitUserPreference === 'light') {
                 document.documentElement.classList.remove('dark');
                 document.body.classList.remove('animated-bg');
                 document.body.classList.add('bg-slate-50');
-                document.getElementById('theme-icon').className = "fa-solid fa-sun text-amber-500";
+                document.getElementById('theme-icon').className = "fa-solid fa-sun text-lg text-amber-500";
+            } else {
+                // Defacto Framework Default: Dark Neon Physics Theme Configuration
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('animated-bg');
+                document.body.classList.remove('bg-slate-50');
+                document.getElementById('theme-icon').className = "fa-solid fa-moon text-lg";
             }
-            renderGrid();
         }
 
         function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            const icon = document.getElementById('theme-icon');
-            if (isDark) {
+            const isTargetDark = !document.documentElement.classList.contains('dark');
+            const iconNode = document.getElementById('theme-icon');
+            
+            if (isTargetDark) {
+                document.documentElement.classList.add('dark');
                 document.body.classList.add('animated-bg');
                 document.body.classList.remove('bg-slate-50');
-                icon.className = "fa-solid fa-moon";
+                iconNode.className = "fa-solid fa-moon text-lg";
                 localStorage.setItem('theme-matrix', 'dark');
             } else {
+                document.documentElement.classList.remove('dark');
                 document.body.classList.remove('animated-bg');
                 document.body.classList.add('bg-slate-50');
-                icon.className = "fa-solid fa-sun text-amber-500";
+                iconNode.className = "fa-solid fa-sun text-lg text-amber-500";
                 localStorage.setItem('theme-matrix', 'light');
             }
         }
 
-        function updateSelection(type, val) {
-            state[type] = val;
+        // Active State Selection Processor
+        function updateActiveSelection(type, vectorValue) {
+            activeAppState[type] = vectorValue;
             
-            // Update button styles directly
+            // Re-render Selection Segment controls layout
             if(type === 'version') {
-                document.getElementById('btn-hsc').className = val === 'HSC' ? "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-gradient-to-r from-cyan-500 to-blue-500 text-white" : "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
-                document.getElementById('btn-ssc').className = val === 'SSC' ? "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-gradient-to-r from-cyan-500 to-blue-500 text-white" : "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
-            } else {
-                document.getElementById('btn-bangla').className = val === 'Bangla' ? "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-gradient-to-r from-purple-500 to-indigo-500 text-white" : "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
-                document.getElementById('btn-english').className = val === 'English' ? "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-gradient-to-r from-purple-500 to-indigo-500 text-white" : "py-2 px-3 font-bold text-xs rounded-lg transition-all bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
+                ['HSC', 'SSC'].forEach(v => {
+                    const el = document.getElementById(btn-${v.toLowerCase()});
+                    if(v === vectorValue) {
+                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-cyan-500 to-blue-500 text-white";
+                    } else {
+                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40";
+                    }
+                });
+            } else if(type === 'medium') {
+                ['Bangla', 'English'].forEach(m => {
+                    const el = document.getElementById(btn-${m.toLowerCase()});
+                    if(m === vectorValue) {
+                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-purple-500 to-indigo-500 text-white";
+                    } else {
+                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40";
+                    }
+                });
             }
-            renderGrid();
+            
+            refreshSystemUI();
         }
 
-        function renderGrid() {
-            document.getElementById('current-badge').innerText = ${state.version} - ${state.medium} Medium;
-            const grid = document.getElementById('books-grid');
-            grid.innerHTML = ''; 
+        // Grid Display Rendering Pipeline Engine
+        function refreshSystemUI() {
+            // Update Text Descriptor Matrix Badges
+            document.getElementById('current-badge').innerText = ${activeAppState.version} - ${activeAppState.medium} Medium;
+            
+            const gridContainer = document.getElementById('books-grid');
+            gridContainer.innerHTML = ''; // Purge view node buffer
 
-            categories.forEach(item => {
-                const key = ${state.version}_${state.medium}_${item.id};
-                const file = db[key];
+            targetBookCategories.forEach(category => {
+                // Storage Matrix Key Address Resolution
+                const targetKeyIndex = ${activeAppState.version}_${activeAppState.medium}_${category.id};
+                const resourceObject = appLocalDatabase[targetKeyIndex];
 
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/60 p-5 rounded-2xl flex flex-col justify-between shadow transition-all hover:scale-[1.02]";
+                const gridCardNode = document.createElement('div');
+                gridCardNode.className = glassmorphism bg-physics-lightCard dark:bg-physics-darkCard border border-slate-200/70 dark:border-slate-800 rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-2xl group ${resourceObject ? 'hover:border-cyan-500/50' : 'hover:border-slate-300 dark:hover:border-slate-700'};
                 
-                card.innerHTML = `
+                let dynamicActionBtn = '';
+                if (resourceObject) {
+                    dynamicActionBtn = `
+                        <a href="${resourceObject.binaryPayload}" download="${resourceObject.metaFileName}" class="w-full mt-5 flex items-center justify-center gap-2 text-xs font-extrabold uppercase tracking-widest text-white bg-gradient-to-r ${category.color} hover:opacity-95 shadow-lg py-3.5 rounded-xl transition-all transform active:scale-95">
+                            <i class="fa-solid fa-file-arrow-down animate-bounce"></i> View / Download PDF
+                        </a>
+                    `;
+                } else {
+                    dynamicActionBtn = `
+                        <button disabled class="w-full mt-5 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800/40 cursor-not-allowed py-3.5 rounded-xl border border-slate-200/50 dark:border-slate-800">
+                            <i class="fa-solid fa-ban text-xs"></i> Not Uploaded Yet
+                        </button>
+                    `;
+                }
+
+                gridCardNode.innerHTML = `
                     <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="p-2.5 rounded-xl bg-gradient-to-br ${item.color} text-white">
-                                <i class="fa-solid ${item.icon} text-lg"></i>
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3.5 rounded-2xl bg-gradient-to-br ${category.color} text-white shadow-lg">
+                                <i class="fa-solid ${category.icon} text-xl"></i>
                             </div>
-                            <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${file ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400'}">
-                                ${file ? 'Available' : 'Empty'}
+                            <span class="text-[10px] uppercase tracking-widest font-extrabold px-3 py-1 rounded-full ${resourceObject ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-slate-400/10 text-slate-400 dark:text-slate-500 border border-slate-400/10'}">
+                                ${resourceObject ? '<i class="fa-solid fa-circle-check"></i> Ready' : 'Awaiting PDF'}
                             </span>
                         </div>
-                        <h3 class="font-display font-bold text-base dark:text-white text-slate-900">${item.name}</h3>
-                        ${file ? `
-                            <p class="text-[11px] font-mono mt-2 text-cyan-400 truncate bg-slate-100 dark:bg-slate-900 p-1.5 rounded"><i class="fa-solid fa-paperclip"></i> ${file.name}</p>
-                        ` : '<p class="text-xs text-slate-400 mt-1">Syllabus-focused academic resource.</p>'}
+                        <h3 class="font-display font-bold text-xl tracking-tight dark:text-white text-slate-900 group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors">${category.name}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">${category.desc}</p>
+                        
+                        ${resourceObject ? `
+                            <div class="mt-4 p-2.5 bg-slate-100/80 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl flex items-center gap-2 max-w-full">
+                                <i class="fa-solid fa-paperclip text-cyan-500 flex-shrink-0"></i>
+                                <span class="text-[11px] font-mono font-medium text-slate-600 dark:text-slate-400 truncate w-full" title="${resourceObject.metaFileName}">${resourceObject.metaFileName}</span>
+                            </div>
+                        ` : ''}
                     </div>
-                    ${file ? `
-                        <a href="${file.data}" download="${file.name}" class="w-full mt-4 flex items-center justify-center gap-2 text-xs font-bold text-white bg-gradient-to-r ${item.color} py-2.5 rounded-lg shadow-md">
-                            <i class="fa-solid fa-file-arrow-down"></i> View / Download PDF
-                        </a>
-                    ` : `
-                        <button disabled class="w-full mt-4 flex items-center justify-center gap-2 text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-900/50 py-2.5 rounded-lg border dark:border-slate-800 cursor-not-allowed">
-                            <i class="fa-solid fa-lock text-[10px]"></i> Locked
-                        </button>
-                    `}
+                    ${dynamicActionBtn}
                 `;
-                grid.appendChild(card);
+                
+                gridContainer.appendChild(gridCardNode);
             });
         }
 
-        function toggleAdminPanel(show) {
-            document.getElementById('admin-panel').classList.toggle('hidden', !show);
-            if(show) {
-                document.getElementById('upload-version').value = state.version;
-                document.getElementById('upload-medium').value = state.medium;
+        // Toggle Visibility parameters for Admin UI Node Layout overlay
+        function toggleAdminPanel(shouldDisplay) {
+            const targetPanel = document.getElementById('admin-panel');
+            if(shouldDisplay) {
+                targetPanel.classList.remove('hidden');
+                // Auto-align admin dropdown menu selectors to current active state views
+                document.getElementById('upload-version').value = activeAppState.version;
+                document.getElementById('upload-medium').value = activeAppState.medium;
+            } else {
+                targetPanel.classList.add('hidden');
             }
         }
 
-        function commitUpload(e) {
-            e.preventDefault();
-            const v = document.getElementById('upload-version').value;
-            const m = document.getElementById('upload-medium').value;
-            const c = document.getElementById('upload-category').value;
-            const fileInput = document.getElementById('upload-file');
-
-            if (!fileInput.files.length) return;
-            const file = fileInput.files[0];
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    db[${v}_${m}_${c}] = { name: file.name, data: evt.target.result };
-                    localStorage.setItem('physics_infinity_db', JSON.stringify(db));
-                    renderGrid();
-                    toggleAdminPanel(false);
-                    document.getElementById('upload-form').reset();
-                } catch(err) {
-                    alert("File too large! Please try an optimized PDF file under 4MB.");
+        // DOM Element Listeners Configurator
+        function registerDomListeners() {
+            const fileStreamInput = document.getElementById('upload-file');
+            const fileLabelTextDisplay = document.getElementById('file-name-display');
+            
+            fileStreamInput.addEventListener('change', (event) => {
+                if (event.target.files.length > 0) {
+                    const parsedName = event.target.files[0].name;
+                    fileLabelTextDisplay.innerText = parsedName;
+                    fileLabelTextDisplay.className = "text-sm font-bold text-emerald-500 truncate max-w-xs mx-auto";
                 }
-            };
-            reader.readAsDataURL(file);
+            });
         }
 
-        // Run initialization
-        initApp();
-    </script>  
+        // Form Commit Binary File Upload Database Mutation Handling System
+        function commitUpload(event) {
+            event.preventDefault();
+
+            const versionVector = document.getElementById('upload-version').value;
+            const mediumVector = document.getElementById('upload-medium').value;
+            const categoryVector = document.getElementById('upload-category').value;
+            const targetFileInput = document.getElementById('upload-file');
+
+            if (targetFileInput.files.length === 0) return;
+            const sourceFile = targetFileInput.files[0];
+
+            // Initialize Stream Reader pipeline processing
+            const fileStreamReader = new FileReader();
+            fileStreamReader.onload = function(readerEvent) {
+                const computedBase64Payload = readerEvent.target.result;
+                const dbKeyIndex = ${versionVector}_${mediumVector}_${categoryVector};
+                
+                // Mount payload object mutation to local schema maps
+                appLocalDatabase[dbKeyIndex] = {
+                    metaFileName: sourceFile.name,
+                    binaryPayload: computedBase64Payload
+                };
+
+                // Commit back buffer array allocation maps natively to storage node
+                try {
+                    localStorage.setItem('physics_infinity_db', JSON.stringify(appLocalDatabase));
+                    
+                    // Direct Dynamic View Update triggering matching matrix state mapping immediately
+                    refreshSystemUI();
+                    toggleAdminPanel(false);
+                    
+                    // Clean Form Pipeline nodes
+                    document.getElementById('upload-form').reset();
+                    document.getElementById('file-name-display').innerText = "Click to map file vector stream";
+                    document.getElementById('file-name-display').className = "text-sm font-semibold text-slate-700 dark:text-slate-300";
+                } catch(quotaError) {
+                    alert("Storage Write Quota exceeded! Base64 payload footprint for this specific file size is too massive to reside in native localStorage. Try testing with an optimized or smaller PDF file blueprint (~1-3MB maximum).");
+                }
+            };
+
+            fileStreamReader.readAsDataURL(sourceFile);
+        }
+
+        // Wipe data track optimization routing
+        function clearSpecificTrack() {
+            const versionVector = document.getElementById('upload-version').value;
+            const mediumVector = document.getElementById('upload-medium').value;
+            const categoryVector = document.getElementById('upload-category').value;
+            const dbKeyIndex = ${versionVector}_${mediumVector}_${categoryVector};
+
+            if(appLocalDatabase[dbKeyIndex]) {
+                delete appLocalDatabase[dbKeyIndex];
+                localStorage.setItem('physics_infinity_db', JSON.stringify(appLocalDatabase));
+                refreshSystemUI();
+                toggleAdminPanel(false);
+                document.getElementById('upload-form').reset();
+                alert(Data vector track for ${versionVector} (${mediumVector} Medium) - Category ID: [${categoryVector}] wiped successfully.);
+            } else {
+                alert("Target target parameters specify an empty track cluster matrix already.");
+            }
+        }
+    </script>
 </body>
 </html>
