@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics Infinity — Rakib Hasan (Sir)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/3.4.1/tailwind.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#05060B;
+    --panel:11,15,31;
+    --cyan:69,232,224;
+    --violet:155,107,255;
+    --amber:255,180,84;
+    --text:#EAF0FF;
+    --muted:#8D98BE;
+    --border:69,232,224;
+  }
+  html.light{
+    --void:#EEF1F9;
+    --panel:255,255,255;
+    --cyan:14,150,145;
+    --violet:110,60,220;
+    --amber:200,110,10;
+    --text:#0C0F1D;
+    --muted:#525C7C;
+    --border:14,150,145;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--void);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    transition:background .5s ease,color .5s ease;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  .font-display{font-family:'Orbitron',sans-serif;}
+  .font-head{font-family:'Space Grotesk',sans-serif;}
+  .font-mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- ambient background ---------- */
+  #bgcanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .grid-floor{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(var(--border),0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--border),0.07) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+  .equation-drift{
+    position:fixed; z-index:0; pointer-events:none;
+    font-family:'JetBrains Mono',monospace;
+    color:rgba(var(--border),0.14);
+    font-weight:500;
+    white-space:nowrap;
+    animation:drift linear infinite;
+  }
+  html.light .equation-drift{color:rgba(var(--border),0.10);}
+  @keyframes drift{
+    0%{transform:translateY(110vh) translateX(0) rotate(0deg);}
+    100%{transform:translateY(-15vh) translateX(30px) rotate(6deg);}
+  }
+  .glow-orb{
+    position:fixed; z-index:0; pointer-events:none; border-radius:50%;
+    filter:blur(90px); opacity:.35; transition:opacity .5s ease;
+  }
+  html.light .glow-orb{opacity:.22;}
+
+  /* ---------- glass ---------- */
+  .glass{
+    background:rgba(var(--panel), 0.55);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(var(--border), 0.18);
+  }
+  html.light .glass{
+    background:rgba(var(--panel), 0.75);
+    border:1px solid rgba(15,23,42,0.08);
+    box-shadow:0 8px 30px rgba(15,23,42,0.06);
+  }
+  .glow-border{
+    box-shadow:0 0 0 1px rgba(var(--border),0.25), 0 0 24px -6px rgba(var(--cyan),0.35);
+  }
+
+  /* ---------- infinity logo ---------- */
+  .infinity-mark path{
+    fill:none; stroke:url(#infGrad); stroke-width:5.5; stroke-linecap:round;
+  }
+  .infinity-electron{
+    offset-path:path('M 20,50 C 20,30 40,30 50,50 C 60,70 80,70 80,50 C 80,30 60,30 50,50 C 40,70 20,70 20,50 Z');
+    animation:orbit 4.5s linear infinite;
+  }
+  @keyframes orbit{ to{ offset-distance:100%; } }
+
+  /* ---------- utility animations ---------- */
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .animate-in{ animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes pulseGlow{
+    0%,100%{ box-shadow:0 0 0 1px rgba(var(--border),0.25), 0 0 18px -6px rgba(var(--cyan),0.4); }
+    50%{ box-shadow:0 0 0 1px rgba(var(--border),0.4), 0 0 34px -4px rgba(var(--cyan),0.6); }
+  }
+  .pulse-glow{ animation:pulseGlow 3s ease-in-out infinite; }
+
+  .tab-btn{ position:relative; }
+  .tab-btn::after{
+    content:''; position:absolute; left:12%; right:12%; bottom:-1px; height:2px;
+    background:linear-gradient(90deg, rgb(var(--cyan)), rgb(var(--violet)));
+    transform:scaleX(0); transform-origin:center; transition:transform .3s ease;
+  }
+  .tab-btn.active::after{ transform:scaleX(1); }
+  .tab-btn.active{ color:var(--text); }
+
+  .book-card{ transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease; }
+  .book-card:hover{ transform:translateY(-6px); }
+
+  .scrollbar-none::-webkit-scrollbar{ display:none; }
+
+  .toggle-track{ transition:background .3s ease; }
+  .toggle-knob{ transition:transform .35s cubic-bezier(.2,.8,.2,1); }
+
+  ::selection{ background:rgba(var(--cyan),0.35); }
+
+  .spinner{
+    width:16px;height:16px;border-radius:50%;
+    border:2px solid rgba(var(--cyan),0.25); border-top-color:rgb(var(--cyan));
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .btn-read-pdf{
+    background:linear-gradient(135deg, #34e08a, #16a34a);
+    color:#04170B;
+    box-shadow:0 0 0 1px rgba(52,224,138,0.4), 0 0 18px -4px rgba(52,224,138,0.7);
+    animation:pulseGreen 2.6s ease-in-out infinite;
+  }
+  @keyframes pulseGreen{
+    0%,100%{ box-shadow:0 0 0 1px rgba(52,224,138,0.4), 0 0 16px -4px rgba(52,224,138,0.6); }
+    50%{ box-shadow:0 0 0 1px rgba(52,224,138,0.6), 0 0 30px -2px rgba(52,224,138,0.9); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .equation-drift, .infinity-electron, .pulse-glow, .animate-in, .btn-read-pdf{ animation:none !important; }
+  }
+</style>
+</head>
+<body class="relative">
+
+<!-- ambient background -->
+<div class="grid-floor"></div>
+<div class="glow-orb" id="orb1" style="width:520px;height:520px; top:-160px; left:-120px; background:radial-gradient(circle, rgb(var(--violet)), transparent 70%);"></div>
+<div class="glow-orb" id="orb2" style="width:460px;height:460px; top:20%; right:-160px; background:radial-gradient(circle, rgb(var(--cyan)), transparent 70%);"></div>
+<div class="glow-orb" id="orb3" style="width:400px;height:400px; bottom:-140px; left:30%; background:radial-gradient(circle, rgb(var(--amber)), transparent 70%);"></div>
+<div id="eqLayer"></div>
+
+<div class="relative z-10 min-h-screen flex flex-col">
+
+  <!-- ============ HEADER ============ -->
+  <header class="glass sticky top-0 z-40 px-4 sm:px-8 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <svg class="infinity-mark w-11 h-11 sm:w-12 sm:h-12 shrink-0" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="infGrad" x1="0" y1="0" x2="100" y2="100">
+              <stop offset="0%" stop-color="rgb(69,232,224)"/>
+              <stop offset="100%" stop-color="rgb(155,107,255)"/>
+            </linearGradient>
+          </defs>
+          <path d="M 20,50 C 20,30 40,30 50,50 C 60,70 80,70 80,50 C 80,30 60,30 50,50 C 40,70 20,70 20,50 Z"/>
+          <circle class="infinity-electron" r="3.2" fill="rgb(255,180,84)"/>
+        </svg>
+        <div>
+          <h1 class="font-display font-900 tracking-wide text-lg sm:text-2xl leading-none" style="letter-spacing:.03em;">
+            PHYSICS <span style="color:rgb(var(--cyan));">INFINITY</span>
+          </h1>
+          <p class="font-mono text-[11px] sm:text-xs mt-1" style="color:var(--muted);">Rakib Hasan (Sir) — Physics Faculty</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- theme toggle -->
+        <button id="themeToggle" aria-label="Toggle theme" class="toggle-track relative w-16 h-9 rounded-full glass glow-border flex items-center px-1 shrink-0">
+          <span id="toggleKnob" class="toggle-knob w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-lg" style="background:linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet)));">
+            <span id="toggleIcon">🌙</span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto mt-2 font-mono text-[11px] sm:text-xs flex flex-wrap gap-x-4 gap-y-1" style="color:var(--muted);">
+      <span>📞 01521414727</span>
+      <span>✉ rakib.cuet27@gmail.com</span>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 pt-10 sm:pt-16 pb-6 animate-in">
+    <p class="font-mono text-xs sm:text-sm tracking-[.25em] uppercase" style="color:rgb(var(--cyan));">Δx · Δp ≥ ħ/2 &nbsp;—&nbsp; Board Physics, Mastered</p>
+    <h2 class="font-head font-700 text-3xl sm:text-5xl mt-3 max-w-3xl leading-tight">
+      Every concept, every board question,<br class="hidden sm:block"> resolved to <span class="font-display" style="color:rgb(var(--violet));">infinity</span>.
+    </h2>
+    <p class="mt-4 max-w-xl text-sm sm:text-base" style="color:var(--muted);">Pick your board version below, then open a book. Sir uploads fresh PDFs directly — no searching, no waiting.</p>
+  </section>
+
+  <!-- ============ VERSION SELECTOR ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 mb-4">
+    <div class="glass glow-border rounded-2xl p-2 flex flex-wrap gap-2">
+      <button data-version="hsc" class="version-btn flex-1 min-w-[140px] font-head font-600 text-sm sm:text-base py-3 rounded-xl transition-all">HSC Version</button>
+      <button data-version="ssc" class="version-btn flex-1 min-w-[140px] font-head font-600 text-sm sm:text-base py-3 rounded-xl transition-all">SSC Version</button>
+    </div>
+
+    <div class="mt-3 flex gap-6 px-2">
+      <button data-lang="bangla" class="lang-btn tab-btn font-mono text-sm pb-2" style="color:var(--muted);">বাংলা মিডিয়াম</button>
+      <button data-lang="english" class="lang-btn tab-btn font-mono text-sm pb-2" style="color:var(--muted);">English Version</button>
+    </div>
+  </section>
+
+  <!-- ============ BOOK GRID ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 flex-1">
+    <div id="bookGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+  <!-- ============ ADMIN PANEL ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 pb-10">
+    <button id="adminToggle" class="w-full glass glow-border rounded-2xl px-5 py-4 flex items-center justify-between font-head font-600 text-sm sm:text-base">
+      <span class="flex items-center gap-2">🔐 Teacher Panel — Add Book Links</span>
+      <span id="adminChevron" class="transition-transform text-lg">⌄</span>
+    </button>
+
+    <div id="adminPanel" class="glass rounded-2xl mt-3 p-5 sm:p-7 hidden animate-in">
+      <p class="text-xs sm:text-sm mb-5" style="color:var(--muted);">Select the exact version, language, and book category, then paste a Google Drive or cloud link to preview it live in this browser. To make it visible to every student on GitHub Pages, copy the link into the <code>BOOK_LINKS</code> object at the top of the script — full instructions are in the code comments there.</p>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div>
+          <label class="font-mono text-xs block mb-1" style="color:var(--muted);">Version</label>
+          <select id="adminVersion" class="w-full glass rounded-lg px-3 py-2 text-sm outline-none" style="color:var(--text);">
+            <option value="hsc">HSC</option>
+            <option value="ssc">SSC</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-mono text-xs block mb-1" style="color:var(--muted);">Language</label>
+          <select id="adminLang" class="w-full glass rounded-lg px-3 py-2 text-sm outline-none" style="color:var(--text);">
+            <option value="bangla">বাংলা মিডিয়াম</option>
+            <option value="english">English Version</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-mono text-xs block mb-1" style="color:var(--muted);">Book Category</label>
+          <select id="adminCategory" class="w-full glass rounded-lg px-3 py-2 text-sm outline-none" style="color:var(--text);"></select>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <label class="font-mono text-xs block mb-2" style="color:var(--muted);">Paste Google Drive or Cloud Link here</label>
+        <input id="adminLink" type="url" placeholder="https://drive.google.com/file/d/xxxxxxxx/view?usp=sharing"
+               class="w-full glass rounded-lg px-4 py-3 text-sm font-mono outline-none" style="color:var(--text);">
+        <p class="font-mono text-[10px] mt-2" style="color:var(--muted);">Tip: in Google Drive, right-click the PDF → Share → "Anyone with the link" → Viewer, then paste that link here.</p>
+      </div>
+
+      <div class="mt-5 flex items-center gap-4 flex-wrap">
+        <button id="uploadBtn" class="pulse-glow font-head font-600 text-sm px-6 py-3 rounded-xl" style="background:linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet))); color:#04050A;">
+          Preview This Link
+        </button>
+        <button id="removeBtn" class="font-head font-600 text-sm px-6 py-3 rounded-xl glass" style="color:var(--muted);">
+          Clear preview for this slot
+        </button>
+        <span id="uploadStatus" class="font-mono text-xs"></span>
+      </div>
+
+      <div class="mt-5 rounded-xl p-4 font-mono text-[11px] leading-relaxed" style="background:rgba(var(--amber),0.08); border:1px solid rgba(var(--amber),0.3); color:var(--muted);">
+        ⚠️ <strong style="color:rgb(var(--amber));">Important for GitHub Pages:</strong> this panel only previews the link in <em>your</em> browser right now — it does not publish to other students, since GitHub Pages has no server or database. To make a book permanently visible to every student worldwide, copy the link and paste it directly into the <code>BOOK_LINKS</code> object near the top of the <code>&lt;script&gt;</code> section in this HTML file, then re-upload the file to GitHub. See the comments there for exact instructions.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="glass border-t px-4 sm:px-8 py-6 mt-auto" style="border-color:rgba(var(--border),0.15);">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6" viewBox="0 0 100 100"><path d="M 20,50 C 20,30 40,30 50,50 C 60,70 80,70 80,50 C 80,30 60,30 50,50 C 40,70 20,70 20,50 Z" fill="none" stroke="url(#infGrad)" stroke-width="7"/></svg>
+        <span class="font-display text-sm">PHYSICS INFINITY</span>
+      </div>
+      <p class="font-mono text-xs" style="color:var(--muted);">© <span id="year"></span> Rakib Hasan (Sir) · 01521414727 · rakib.cuet27@gmail.com</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const CATEGORIES = [
+  { slug:"basic-book",   name:"Basic Book",           icon:"📘", desc:"Foundational theory, chapter by chapter." },
+  { slug:"concept-book",  name:"Concept Book",         icon:"🧠", desc:"Deep conceptual clarity with derivations." },
+  { slug:"short-math-mcq",name:"Short Math (MCQ) Book",icon:"📐", desc:"Quick numerical problems, MCQ format." },
+  { slug:"mcq-booster",   name:"MCQ Booster",          icon:"⚡", desc:"High-yield MCQs for rapid revision." },
+  { slug:"cq-booster",    name:"CQ Booster",           icon:"✍️", desc:"Creative questions with model answers." },
+  { slug:"mega-suggestion",name:"Mega / Suggestions",  icon:"🎯", desc:"Final exam suggestions & predictions." },
+  { slug:"foundation-book",name:"Foundation Book",     icon:"🏛️", desc:"Build-up from basics for beginners." },
+];
+
+const EQUATIONS = ["E = mc²","F = ma","λ = h/p","ΔxΔp ≥ ħ/2","∇ × E = −∂B/∂t","v = u + at","PV = nRT","q = mcΔT","F = kx","c = fλ","W = Fd cosθ"];
+
+/* ======================================================================
+   📌 BOOK_LINKS — THIS IS WHERE SIR PASTES THE REAL PDF LINKS.
+   ======================================================================
+   This app is hosted on GitHub Pages, which is STATIC hosting — there is
+   no server or database, so a file chosen in a browser can never sync to
+   other students' devices. The reliable fix is: host each PDF somewhere
+   public (Google Drive, Dropbox, OneDrive, etc.) and paste the shareable
+   link into this object. Because this object lives directly in the HTML
+   file, once you commit + push it to GitHub, EVERY student who opens the
+   site — on any device, anywhere in the world — sees the same links
+   instantly. No login, no sync, no backend needed.
+
+   HOW TO ADD A LINK, STEP BY STEP:
+   1. Upload the PDF to Google Drive (or Dropbox / OneDrive).
+   2. Right-click the file → Share → change access to
+      "Anyone with the link" → set role to "Viewer" → Copy link.
+   3. Find the matching slot below (version → language → book slug)
+      and paste the link between the quotes, replacing "".
+      Example:
+        "basic-book": "https://drive.google.com/file/d/1AbCдEfG/view?usp=sharing",
+   4. Save this file and re-upload / push it to your GitHub repository.
+   5. That book's card will automatically switch to a glowing green
+      "Read PDF" button for every visitor — no other changes needed.
+
+   The 7 book slugs are fixed (they match the CATEGORIES list above):
+   "basic-book", "concept-book", "short-math-mcq", "mcq-booster",
+   "cq-booster", "mega-suggestion", "foundation-book".
+
+   Leave a slot as "" (empty string) if that book isn't ready yet — its
+   card will simply show "Not uploaded yet" until you fill it in.
+   ====================================================================== */
+const BOOK_LINKS = {
+  hsc: {
+    bangla: {
+      "basic-book":      "",   // 👉 paste HSC · Bangla · Basic Book link here
+      "concept-book":    "",   // 👉 paste HSC · Bangla · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste HSC · Bangla · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste HSC · Bangla · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste HSC · Bangla · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste HSC · Bangla · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste HSC · Bangla · Foundation Book link here
+    },
+    english: {
+      "basic-book":      "",   // 👉 paste HSC · English · Basic Book link here
+      "concept-book":    "",   // 👉 paste HSC · English · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste HSC · English · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste HSC · English · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste HSC · English · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste HSC · English · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste HSC · English · Foundation Book link here
+    }
+  },
+  ssc: {
+    bangla: {
+      "basic-book":      "",   // 👉 paste SSC · Bangla · Basic Book link here
+      "concept-book":    "",   // 👉 paste SSC · Bangla · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste SSC · Bangla · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste SSC · Bangla · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste SSC · Bangla · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste SSC · Bangla · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste SSC · Bangla · Foundation Book link here
+    },
+    english: {
+      "basic-book":      "",   // 👉 paste SSC · English · Basic Book link here
+      "concept-book":    "",   // 👉 paste SSC · English · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste SSC · English · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste SSC · English · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste SSC · English · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste SSC · English · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste SSC · English · Foundation Book link here
+    }
+  }
+};
+
+let state = { version:"hsc", lang:"bangla" };
+
+/* ================= SAFE STORAGE LAYER =================
+   Browser localStorage is not available inside the Claude Artifacts
+   sandbox, so this wraps the artifact platform's persistent storage
+   (window.storage) and silently falls back to an in-memory store for
+   the current session if that call ever fails for any reason. No
+   errors or warnings are ever surfaced to the console. */
+const memoryFallback = new Map();
+
+const safeStorage = {
+  async get(key, shared){
+    try{
+      if(window.storage && typeof window.storage.get === 'function'){
+        const res = await window.storage.get(key, shared);
+        if(res && typeof res.value === 'string') return res.value;
+      }
+    }catch(e){ /* fall through to memory */ }
+    return memoryFallback.has(key) ? memoryFallback.get(key) : null;
+  },
+  async set(key, value, shared){
+    memoryFallback.set(key, value); // always keep an in-memory copy as a safety net
+    try{
+      if(window.storage && typeof window.storage.set === 'function'){
+        const res = await window.storage.set(key, value, shared);
+        return !!res;
+      }
+    }catch(e){ /* silently rely on memory fallback */ }
+    return true;
+  },
+  async delete(key, shared){
+    memoryFallback.delete(key);
+    try{
+      if(window.storage && typeof window.storage.delete === 'function'){
+        await window.storage.delete(key, shared);
+      }
+    }catch(e){ /* silently rely on memory fallback */ }
+    return true;
+  }
+};
+
+/* ================= BACKGROUND FX ================= */
+function seedEquations(){
+  const layer = document.getElementById('eqLayer');
+  layer.innerHTML = "";
+  for(let i=0;i<10;i++){
+    const el = document.createElement('div');
+    el.className = "equation-drift";
+    el.textContent = EQUATIONS[Math.floor(Math.random()*EQUATIONS.length)];
+    el.style.left = (Math.random()*90)+"vw";
+    el.style.fontSize = (14 + Math.random()*16)+"px";
+    const dur = 18 + Math.random()*20;
+    el.style.animationDuration = dur+"s";
+    el.style.animationDelay = (-Math.random()*dur)+"s";
+    layer.appendChild(el);
+  }
+}
+seedEquations();
+
+/* ================= THEME ================= */
+const root = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+const toggleIcon = document.getElementById('toggleIcon');
+const toggleKnob = document.getElementById('toggleKnob');
+
+function applyTheme(mode){
+  if(mode === 'light'){
+    root.classList.remove('dark'); root.classList.add('light');
+    toggleIcon.textContent = '☀️';
+    toggleKnob.style.transform = 'translateX(28px)';
+  } else {
+    root.classList.remove('light'); root.classList.add('dark');
+    toggleIcon.textContent = '🌙';
+    toggleKnob.style.transform = 'translateX(0)';
+  }
+}
+
+let currentTheme = 'dark';
+applyTheme(currentTheme);
+
+themeToggle.addEventListener('click', async () => {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(currentTheme);
+  await safeStorage.set('pref:theme', currentTheme, false);
+});
+
+// restore saved theme preference (non-blocking, silent on any failure)
+(async () => {
+  const saved = await safeStorage.get('pref:theme', false);
+  if(saved){ currentTheme = saved; applyTheme(currentTheme); }
+})();
+
+/* ================= VERSION / LANG TABS ================= */
+function styleVersionButtons(){
+  document.querySelectorAll('.version-btn').forEach(btn=>{
+    const active = btn.dataset.version === state.version;
+    btn.style.background = active ? 'linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet)))' : 'transparent';
+    btn.style.color = active ? '#04050A' : 'var(--muted)';
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const active = btn.dataset.lang === state.lang;
+    btn.classList.toggle('active', active);
+    btn.style.color = active ? 'var(--text)' : 'var(--muted)';
+  });
+}
+
+document.querySelectorAll('.version-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ state.version = btn.dataset.version; styleVersionButtons(); renderBooks(); });
+});
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ state.lang = btn.dataset.lang; styleVersionButtons(); renderBooks(); });
+});
+
+/* ================= STORAGE HELPERS (session-only preview links) ================= */
+function storageKey(version, lang, slug){
+  return `pdf:${version}:${lang}:${slug}`;
+}
+
+/* ================= BOOK GRID ================= */
+async function renderBooks(){
+  const grid = document.getElementById('bookGrid');
+  grid.innerHTML = CATEGORIES.map(c => `
+    <div class="book-card glass rounded-2xl p-5 flex flex-col justify-between animate-in" data-slug="${c.slug}">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-3xl">${c.icon}</span>
+          <span class="font-mono text-[10px] px-2 py-1 rounded-full" style="color:rgb(var(--cyan)); border:1px solid rgba(var(--cyan),0.35);">${state.version.toUpperCase()} · ${state.lang === 'bangla' ? 'বাংলা' : 'ENG'}</span>
+        </div>
+        <h3 class="font-head font-700 text-lg mb-1">${c.name}</h3>
+        <p class="text-xs sm:text-sm mb-4" style="color:var(--muted);">${c.desc}</p>
+      </div>
+      <div class="card-action">
+        <div class="spinner mx-auto"></div>
+      </div>
+    </div>
+  `).join('');
+
+  // populate each card's action area
+  for(const c of CATEGORIES){
+    const cardEl = grid.querySelector(`[data-slug="${c.slug}"] .card-action`);
+    if(!cardEl) continue;
+
+    // 1) permanent, hardcoded link (works for every visitor worldwide)
+    let link = (BOOK_LINKS[state.version] && BOOK_LINKS[state.version][state.lang] && BOOK_LINKS[state.version][state.lang][c.slug]) || "";
+    let isPreview = false;
+
+    // 2) fall back to a session-only preview link entered in the admin panel
+    if(!link){
+      const key = storageKey(state.version, state.lang, c.slug);
+      const previewLink = await safeStorage.get(key, false);
+      if(previewLink){ link = previewLink; isPreview = true; }
+    }
+
+    if(link){
+      cardEl.innerHTML = `
+        <a href="${link}" target="_blank" rel="noopener noreferrer"
+           class="btn-read-pdf block text-center font-head font-600 text-sm px-4 py-3 rounded-xl">
+          📗 Read PDF
+        </a>
+        ${isPreview ? `<p class="font-mono text-[10px] mt-2 text-center" style="color:rgb(var(--amber));">Preview only — hardcode this link in BOOK_LINKS to publish it</p>` : ``}
+      `;
+    } else {
+      cardEl.innerHTML = `
+        <div class="text-center font-mono text-xs px-4 py-3 rounded-xl" style="color:var(--muted); border:1px dashed rgba(var(--border),0.3);">
+          Not uploaded yet
+        </div>
+      `;
+    }
+  }
+}
+
+/* ================= ADMIN PANEL ================= */
+const adminToggle = document.getElementById('adminToggle');
+const adminPanel = document.getElementById('adminPanel');
+const adminChevron = document.getElementById('adminChevron');
+adminToggle.addEventListener('click', ()=>{
+  adminPanel.classList.toggle('hidden');
+  adminChevron.style.transform = adminPanel.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+});
+
+const adminCategory = document.getElementById('adminCategory');
+adminCategory.innerHTML = CATEGORIES.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+
+const uploadBtn = document.getElementById('uploadBtn');
+const removeBtn = document.getElementById('removeBtn');
+const uploadStatus = document.getElementById('uploadStatus');
+const adminLink = document.getElementById('adminLink');
+
+function isLikelyValidUrl(str){
+  try{ const u = new URL(str); return u.protocol === 'http:' || u.protocol === 'https:'; }
+  catch(e){ return false; }
+}
+
+uploadBtn.addEventListener('click', async ()=>{
+  const version = document.getElementById('adminVersion').value;
+  const lang = document.getElementById('adminLang').value;
+  const slug = adminCategory.value;
+  const link = adminLink.value.trim();
+
+  if(!link){
+    uploadStatus.textContent = "Paste a link first.";
+    uploadStatus.style.color = "rgb(var(--amber))";
+    return;
+  }
+  if(!isLikelyValidUrl(link)){
+    uploadStatus.textContent = "That doesn't look like a valid link.";
+    uploadStatus.style.color = "rgb(var(--amber))";
+    return;
+  }
+
+  uploadStatus.textContent = "Loading preview...";
+  uploadStatus.style.color = "var(--muted)";
+  uploadBtn.disabled = true;
+
+  const key = storageKey(version, lang, slug);
+  await safeStorage.set(key, link, false);
+
+  uploadStatus.textContent = `Previewing in ${version.toUpperCase()} · ${lang}. Hardcode this link in BOOK_LINKS to publish it for everyone.`;
+  uploadStatus.style.color = "rgb(var(--cyan))";
+  uploadBtn.disabled = false;
+  if(version === state.version && lang === state.lang) renderBooks();
+});
+
+removeBtn.addEventListener('click', async ()=>{
+  const version = document.getElementById('adminVersion').value;
+  const lang = document.getElementById('adminLang').value;
+  const slug = adminCategory.value;
+  const key = storageKey(version, lang, slug);
+  await safeStorage.delete(key, false);
+  adminLink.value = "";
+  uploadStatus.textContent = "Preview cleared.";
+  uploadStatus.style.color = "var(--muted)";
+  if(version === state.version && lang === state.lang) renderBooks();
+});
+
+/* ================= INIT ================= */
+document.getElementById('year').textContent = new Date().getFullYear();
+styleVersionButtons();
+renderBooks();
+</script>
+</body>
+</html>
