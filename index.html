@@ -1,477 +1,622 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Physics Infinity | Rakib Hasan (Sir)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics Infinity — Rakib Hasan (Sir)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/3.4.1/tailwind.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#05060B;
+    --panel:11,15,31;
+    --cyan:69,232,224;
+    --violet:155,107,255;
+    --amber:255,180,84;
+    --text:#EAF0FF;
+    --muted:#8D98BE;
+    --border:69,232,224;
+  }
+  html.light{
+    --void:#EEF1F9;
+    --panel:255,255,255;
+    --cyan:14,150,145;
+    --violet:110,60,220;
+    --amber:200,110,10;
+    --text:#0C0F1D;
+    --muted:#525C7C;
+    --border:14,150,145;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--void);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    transition:background .5s ease,color .5s ease;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  .font-display{font-family:'Orbitron',sans-serif;}
+  .font-head{font-family:'Space Grotesk',sans-serif;}
+  .font-mono{font-family:'JetBrains Mono',monospace;}
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        physics: {
-                            cyan: '#06b6d4',
-                            blue: '#3b82f6',
-                            purple: '#a855f7',
-                            darkBg: '#0f172a',
-                            darkCard: 'rgba(30, 41, 59, 0.7)',
-                            lightBg: '#f8fafc',
-                            lightCard: 'rgba(255, 255, 255, 0.85)',
-                        }
-                    },
-                    boxShadow: {
-                        'neon-cyan': '0 0 15px rgba(6, 182, 212, 0.4)',
-                        'neon-purple': '0 0 15px rgba(168, 85, 247, 0.4)',
-                    }
-                }
-            }
-        }
-    </script>
+  /* ---------- ambient background ---------- */
+  #bgcanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .grid-floor{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(var(--border),0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--border),0.07) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+  .equation-drift{
+    position:fixed; z-index:0; pointer-events:none;
+    font-family:'JetBrains Mono',monospace;
+    color:rgba(var(--border),0.14);
+    font-weight:500;
+    white-space:nowrap;
+    animation:drift linear infinite;
+  }
+  html.light .equation-drift{color:rgba(var(--border),0.10);}
+  @keyframes drift{
+    0%{transform:translateY(110vh) translateX(0) rotate(0deg);}
+    100%{transform:translateY(-15vh) translateX(30px) rotate(6deg);}
+  }
+  .glow-orb{
+    position:fixed; z-index:0; pointer-events:none; border-radius:50%;
+    filter:blur(90px); opacity:.35; transition:opacity .5s ease;
+  }
+  html.light .glow-orb{opacity:.22;}
 
-    <style>
-        body {
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glassmorphism {
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-        .animated-bg {
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #111827, #0f172a);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-    </style>
+  /* ---------- glass ---------- */
+  .glass{
+    background:rgba(var(--panel), 0.55);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(var(--border), 0.18);
+  }
+  html.light .glass{
+    background:rgba(var(--panel), 0.75);
+    border:1px solid rgba(15,23,42,0.08);
+    box-shadow:0 8px 30px rgba(15,23,42,0.06);
+  }
+  .glow-border{
+    box-shadow:0 0 0 1px rgba(var(--border),0.25), 0 0 24px -6px rgba(var(--cyan),0.35);
+  }
+
+  /* ---------- infinity logo ---------- */
+  .infinity-mark path{
+    fill:none; stroke:url(#infGrad); stroke-width:5.5; stroke-linecap:round;
+  }
+  .infinity-electron{
+    offset-path:path('M 20,50 C 20,30 40,30 50,50 C 60,70 80,70 80,50 C 80,30 60,30 50,50 C 40,70 20,70 20,50 Z');
+    animation:orbit 4.5s linear infinite;
+  }
+  @keyframes orbit{ to{ offset-distance:100%; } }
+
+  /* ---------- utility animations ---------- */
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .animate-in{ animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes pulseGlow{
+    0%,100%{ box-shadow:0 0 0 1px rgba(var(--border),0.25), 0 0 18px -6px rgba(var(--cyan),0.4); }
+    50%{ box-shadow:0 0 0 1px rgba(var(--border),0.4), 0 0 34px -4px rgba(var(--cyan),0.6); }
+  }
+  .pulse-glow{ animation:pulseGlow 3s ease-in-out infinite; }
+
+  .tab-btn{ position:relative; }
+  .tab-btn::after{
+    content:''; position:absolute; left:12%; right:12%; bottom:-1px; height:2px;
+    background:linear-gradient(90deg, rgb(var(--cyan)), rgb(var(--violet)));
+    transform:scaleX(0); transform-origin:center; transition:transform .3s ease;
+  }
+  .tab-btn.active::after{ transform:scaleX(1); }
+  .tab-btn.active{ color:var(--text); }
+
+  .book-card{ transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease; }
+  .book-card:hover{ transform:translateY(-6px); }
+
+  .scrollbar-none::-webkit-scrollbar{ display:none; }
+
+  .toggle-track{ transition:background .3s ease; }
+  .toggle-knob{ transition:transform .35s cubic-bezier(.2,.8,.2,1); }
+
+  ::selection{ background:rgba(var(--cyan),0.35); }
+
+  .spinner{
+    width:16px;height:16px;border-radius:50%;
+    border:2px solid rgba(var(--cyan),0.25); border-top-color:rgb(var(--cyan));
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .btn-read-pdf{
+    background:linear-gradient(135deg, #34e08a, #16a34a);
+    color:#04170B;
+    box-shadow:0 0 0 1px rgba(52,224,138,0.4), 0 0 18px -4px rgba(52,224,138,0.7);
+    animation:pulseGreen 2.6s ease-in-out infinite;
+  }
+  @keyframes pulseGreen{
+    0%,100%{ box-shadow:0 0 0 1px rgba(52,224,138,0.4), 0 0 16px -4px rgba(52,224,138,0.6); }
+    50%{ box-shadow:0 0 0 1px rgba(52,224,138,0.6), 0 0 30px -2px rgba(52,224,138,0.9); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .equation-drift, .infinity-electron, .pulse-glow, .animate-in, .btn-read-pdf{ animation:none !important; }
+  }
+</style>
 </head>
-<body class="animated-bg dark:text-slate-100 text-slate-800 font-sans min-h-screen selection:bg-cyan-500 selection:text-white flex flex-col justify-between">
+<body class="relative">
 
-    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0 opacity-30 dark:opacity-40">
-        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-500/10 blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-500/10 blur-[120px]"></div>
+<!-- ambient background -->
+<div class="grid-floor"></div>
+<div class="glow-orb" id="orb1" style="width:520px;height:520px; top:-160px; left:-120px; background:radial-gradient(circle, rgb(var(--violet)), transparent 70%);"></div>
+<div class="glow-orb" id="orb2" style="width:460px;height:460px; top:20%; right:-160px; background:radial-gradient(circle, rgb(var(--cyan)), transparent 70%);"></div>
+<div class="glow-orb" id="orb3" style="width:400px;height:400px; bottom:-140px; left:30%; background:radial-gradient(circle, rgb(var(--amber)), transparent 70%);"></div>
+<div id="eqLayer"></div>
+
+<div class="relative z-10 min-h-screen flex flex-col">
+
+  <!-- ============ HEADER ============ -->
+  <header class="glass sticky top-0 z-40 px-4 sm:px-8 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <svg class="infinity-mark w-11 h-11 sm:w-12 sm:h-12 shrink-0" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="infGrad" x1="0" y1="0" x2="100" y2="100">
+              <stop offset="0%" stop-color="rgb(69,232,224)"/>
+              <stop offset="100%" stop-color="rgb(155,107,255)"/>
+            </linearGradient>
+          </defs>
+          <path d="M 20,50 C 20,30 40,30 50,50 C 60,70 80,70 80,50 C 80,30 60,30 50,50 C 40,70 20,70 20,50 Z"/>
+          <circle class="infinity-electron" r="3.2" fill="rgb(255,180,84)"/>
+        </svg>
+        <div>
+          <h1 class="font-display font-900 tracking-wide text-lg sm:text-2xl leading-none" style="letter-spacing:.03em;">
+            PHYSICS <span style="color:rgb(var(--cyan));">INFINITY</span>
+          </h1>
+          <p class="font-mono text-[11px] sm:text-xs mt-1" style="color:var(--muted);">Rakib Hasan (Sir) — Physics Faculty</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- theme toggle -->
+        <button id="themeToggle" aria-label="Toggle theme" class="toggle-track relative w-16 h-9 rounded-full glass glow-border flex items-center px-1 shrink-0">
+          <span id="toggleKnob" class="toggle-knob w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-lg" style="background:linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet)));">
+            <span id="toggleIcon">🌙</span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto mt-2 font-mono text-[11px] sm:text-xs flex flex-wrap gap-x-4 gap-y-1" style="color:var(--muted);">
+      <span>📞 01521414727</span>
+      <span>✉️ rakib.cuet27@gmail.com</span>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 pt-10 sm:pt-16 pb-6 animate-in">
+    <p class="font-mono text-xs sm:text-sm tracking-[.25em] uppercase" style="color:rgb(var(--cyan));">Δx · Δp ≥ ħ/2 &nbsp;—&nbsp; Board Physics, Mastered</p>
+    <h2 class="font-head font-700 text-3xl sm:text-5xl mt-3 max-w-3xl leading-tight">
+      Every concept, every board question,<br class="hidden sm:block"> resolved to <span class="font-display" style="color:rgb(var(--violet));">infinity</span>.
+    </h2>
+    <p class="mt-4 max-w-xl text-sm sm:text-base" style="color:var(--muted);">Pick your board version below, then open a book. Sir uploads fresh PDFs directly — no searching, no waiting.</p>
+  </section>
+
+  <!-- ============ VERSION SELECTOR ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 mb-4">
+    <div class="glass glow-border rounded-2xl p-2 flex flex-wrap gap-2">
+      <button data-version="hsc" class="version-btn flex-1 min-w-[140px] font-head font-600 text-sm sm:text-base py-3 rounded-xl transition-all">HSC Version</button>
+      <button data-version="ssc" class="version-btn flex-1 min-w-[140px] font-head font-600 text-sm sm:text-base py-3 rounded-xl transition-all">SSC Version</button>
     </div>
 
-    <div class="relative z-10 max-w-6xl w-full mx-auto px-4 py-6 md:py-10 flex flex-col flex-grow">
-        
-        <header class="glassmorphism bg-physics-lightCard dark:bg-physics-darkCard border border-slate-200/60 dark:border-slate-700/50 rounded-3xl p-6 md:p-8 shadow-xl mb-8 transform transition-all duration-300 hover:border-cyan-500/30">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-2.5 rounded-2xl shadow-neon-cyan text-white flex items-center justify-center">
-                            <i class="fa-solid fa-atom text-2xl animate-spin [animation-duration:12s]"></i>
-                        </div>
-                        <h1 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
-                            Physics Infinity
-                        </h1>
-                    </div>
-                    <p class="text-sm md:text-base font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-cyan-500"></i> Mentor: Rakib Hasan (Sir)
-                    </p>
-                    
-                    <div class="flex flex-wrap gap-3 mt-4 text-xs md:text-sm text-slate-500 dark:text-slate-400">
-                        <a href="tel:01521414727" class="flex items-center gap-2 hover:text-cyan-500 transition-colors bg-slate-100/80 dark:bg-slate-800/60 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
-                            <i class="fa-solid fa-phone text-emerald-500"></i> 01521414727
-                        </a>
-                        <a href="mailto:rakib.cuet27@gmail.com" class="flex items-center gap-2 hover:text-purple-500 transition-colors bg-slate-100/80 dark:bg-slate-800/60 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
-                            <i class="fa-solid fa-envelope text-purple-400"></i> rakib.cuet27@gmail.com
-                        </a>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3 self-end md:self-center">
-                    <button onclick="toggleAdminPanel(true)" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-cyan-500 hover:to-blue-500 hover:text-white transition-all duration-300 cursor-pointer shadow-sm">
-                        <i class="fa-solid fa-user-shield"></i> Teacher Panel
-                    </button>
-                    <button onclick="toggleTheme()" class="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors" aria-label="Toggle System Layout Theme">
-                        <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <section class="mb-8">
-            <div class="text-center mb-6">
-                <span class="text-xs font-bold tracking-widest text-cyan-500 uppercase bg-cyan-500/10 dark:bg-cyan-500/20 px-3 py-1 rounded-full">Dashboard Filter Matrix</span>
-                <h2 class="text-xl md:text-2xl font-bold font-display mt-2 dark:text-white text-slate-900">Select Academic Stream</h2>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-2xl max-w-2xl mx-auto border border-slate-300/40 dark:border-slate-800 glassmorphism shadow-inner">
-                <div class="grid grid-cols-2 gap-1.5 w-full sm:w-1/2">
-                    <button id="btn-hsc" onclick="updateActiveSelection('version', 'HSC')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
-                        HSC Version
-                    </button>
-                    <button id="btn-ssc" onclick="updateActiveSelection('version', 'SSC')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40">
-                        SSC Version
-                    </button>
-                </div>
-                <div class="h-px sm:h-8 w-full sm:w-px bg-slate-300 dark:bg-slate-700 hidden sm:block"></div>
-                <div class="grid grid-cols-2 gap-1.5 w-full sm:w-1/2">
-                    <button id="btn-bangla" onclick="updateActiveSelection('medium', 'Bangla')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-                        Bangla Medium
-                    </button>
-                    <button id="btn-english" onclick="updateActiveSelection('medium', 'English')" class="py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40">
-                        English Medium
-                    </button>
-                </div>
-            </div>
-            
-            <div class="text-center mt-4">
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    Active Catalog Matrix: <span id="current-badge" class="font-bold text-cyan-500 bg-cyan-500/10 dark:bg-cyan-500/20 px-2 py-0.5 rounded ml-1">HSC - Bangla Medium</span>
-                </p>
-            </div>
-        </section>
-
-        <main class="mb-12 flex-grow">
-            <div id="books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-        </main>
-
-        <section id="admin-panel" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-300">
-            <div class="glassmorphism bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl p-6 relative transform scale-100">
-                
-                <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-4 mb-6">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
-                        <i class="fa-solid fa-server text-lg text-cyan-500"></i>
-                        <h3 class="font-display text-xl font-bold dark:text-white text-slate-900">Resource Infrastructure Portal</h3>
-                    </div>
-                    <button onclick="toggleAdminPanel(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                </div>
-
-                <form id="upload-form" onsubmit="commitUpload(event)" class="space-y-5">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Target Class</label>
-                            <select id="upload-version" class="w-full bg-slate-50 dark:bg-slate-800 dark:text-white text-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 transition-colors">
-                                <option value="HSC">HSC Version</option>
-                                <option value="SSC">SSC Version</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Target Medium</label>
-                            <select id="upload-medium" class="w-full bg-slate-50 dark:bg-slate-800 dark:text-white text-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 transition-colors">
-                                <option value="Bangla">Bangla Medium</option>
-                                <option value="English">English Medium</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Book Category Track</label>
-                        <select id="upload-category" class="w-full bg-slate-50 dark:bg-slate-800 dark:text-white text-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-cyan-500 transition-colors">
-                            <option value="basic">Basic Book</option>
-                            <option value="concept">Concept Book</option>
-                            <option value="shortmath">Short Math (MCQ) Book</option>
-                            <option value="mcqbooster">MCQ Booster</option>
-                            <option value="cqbooster">CQ Booster</option>
-                            <option value="suggestions">Mega / Suggestions</option>
-                            <option value="foundation">Foundation Book</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Binary Payload (PDF File)</label>
-                        <div class="relative group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 text-center hover:border-cyan-500 dark:hover:border-cyan-500 transition-colors bg-slate-50/50 dark:bg-slate-800/30">
-                            <input type="file" id="upload-file" accept=".pdf" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                            <div class="space-y-2 pointer-events-none">
-                                <i class="fa-solid fa-file-pdf text-4xl text-slate-400 group-hover:text-red-400 transition-colors"></i>
-                                <p class="text-sm font-semibold text-slate-700 dark:text-slate-300" id="file-name-display">Click to map file vector stream</p>
-                                <p class="text-[11px] text-slate-400">Strict System File Validation Limit: ~20MB</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 pt-2">
-                        <button type="button" onclick="clearSpecificTrack()" class="w-1/3 bg-slate-100 dark:bg-slate-800 hover:bg-red-500 dark:hover:bg-red-600 text-slate-600 dark:text-slate-300 hover:text-white dark:hover:text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all">
-                            Reset Track
-                        </button>
-                        <button type="submit" class="w-2/3 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-lg hover:opacity-95 transition-all transform active:scale-[0.98]">
-                            Push Update to Grid
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <footer class="mt-auto border-t border-slate-200/60 dark:border-slate-800/60 pt-6 text-center text-xs text-slate-400 dark:text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p>&copy; 2026 Physics Infinity. Developed and Structured under guidance of Rakib Hasan (Sir).</p>
-            <div class="flex gap-4 font-medium">
-                <span class="hover:text-cyan-500 transition-colors cursor-pointer"><i class="fa-solid fa-user-shield"></i> Security Policy</span>
-                <span onclick="toggleAdminPanel(true)" class="hover:text-cyan-500 transition-colors cursor-pointer text-slate-500 dark:text-slate-300 font-bold"><i class="fa-solid fa-code-branch"></i> Core Control System</span>
-            </div>
-        </footer>
-
+    <div class="mt-3 flex gap-6 px-2">
+      <button data-lang="bangla" class="lang-btn tab-btn font-mono text-sm pb-2" style="color:var(--muted);">বাংলা মিডিয়াম</button>
+      <button data-lang="english" class="lang-btn tab-btn font-mono text-sm pb-2" style="color:var(--muted);">English Version</button>
     </div>
+  </section>
 
-    <script>
-        // Exact 7 Category Core Array Dataset System Mapping Layout
-        const targetBookCategories = [
-            { id: 'basic', name: 'Basic Book', icon: 'fa-book-open-reader', color: 'from-cyan-500 to-blue-600', desc: 'Comprehensive conceptual physics framework and theory breakdowns.' },
-            { id: 'concept', name: 'Concept Book', icon: 'fa-brain', color: 'from-blue-500 to-indigo-600', desc: 'Advanced engineering and analytical conceptual mapping.' },
-            { id: 'shortmath', name: 'Short Math (MCQ) Book', icon: 'fa-calculator', color: 'from-purple-500 to-pink-600', desc: 'Tricks, shortcuts, and mathematical deduction algorithms.' },
-            { id: 'mcqbooster', name: 'MCQ Booster', icon: 'fa-rocket', color: 'from-amber-500 to-orange-600', desc: 'High-yield competitive problem sets optimized for quick solution times.' },
-            { id: 'cqbooster', name: 'CQ Booster', icon: 'fa-shield-cat', color: 'from-emerald-500 to-teal-600', desc: 'Structured analytics for board/admission creative questions.' },
-            { id: 'suggestions', name: 'Mega / Suggestions', icon: 'fa-fire-flame-curved', color: 'from-rose-500 to-red-600', desc: 'Highly curated target parameters for upcoming examinations.' },
-            { id: 'foundation', name: 'Foundation Book', icon: 'fa-building-columns', color: 'from-indigo-500 to-purple-600', desc: 'Core operational physics axioms for foundational mastery.' }
-        ];
+  <!-- ============ BOOK GRID ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 flex-1">
+    <div id="bookGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
 
-        // Reactive Application Environment Variables
-        let activeAppState = {
-            version: 'HSC',
-            medium: 'Bangla'
-        };
+  <!-- ============ ADMIN PANEL ============ -->
+  <section class="max-w-7xl mx-auto w-full px-4 sm:px-8 pb-10">
+    <button id="adminToggle" class="w-full glass glow-border rounded-2xl px-5 py-4 flex items-center justify-between font-head font-600 text-sm sm:text-base">
+      <span class="flex items-center gap-2">🔐 Teacher Panel — Add Book Links</span>
+      <span id="adminChevron" class="transition-transform text-lg">⌄</span>
+    </button>
 
-        // Binary Vector Registry Storage Object Map instantiation
-        let appLocalDatabase = {};
+    <div id="adminPanel" class="glass rounded-2xl mt-3 p-5 sm:p-7 hidden animate-in">
+      <p class="text-xs sm:text-sm mb-5" style="color:var(--muted);">Select the exact version, language, and book category, then paste a Google Drive or cloud link to preview it live in this browser. To make it visible to every student on GitHub Pages, copy the link into the <code>BOOK_LINKS</code> object at the top of the script — full instructions are in the code comments there.</p>
 
-        // Application Lifecyle Core Initialization Node
-        window.addEventListener('DOMContentLoaded', () => {
-            syncLocalStorageMatrix();
-            applyThemeStateOnLoad();
-            refreshSystemUI();
-            registerDomListeners();
-        });
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div>
+          <label class="font-mono text-xs block mb-1" style="color:var(--muted);">Version</label>
+          <select id="adminVersion" class="w-full glass rounded-lg px-3 py-2 text-sm outline-none" style="color:var(--text);">
+            <option value="hsc">HSC</option>
+            <option value="ssc">SSC</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-mono text-xs block mb-1" style="color:var(--muted);">Language</label>
+          <select id="adminLang" class="w-full glass rounded-lg px-3 py-2 text-sm outline-none" style="color:var(--text);">
+            <option value="bangla">বাংলা মিডিয়াম</option>
+            <option value="english">English Version</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-mono text-xs block mb-1" style="color:var(--muted);">Book Category</label>
+          <select id="adminCategory" class="w-full glass rounded-lg px-3 py-2 text-sm outline-none" style="color:var(--text);"></select>
+        </div>
+      </div>
 
-        function syncLocalStorageMatrix() {
-            const rawData = localStorage.getItem('physics_infinity_db');
-            if (rawData) {
-                try {
-                    appLocalDatabase = JSON.parse(rawData);
-                } catch(e) {
-                    console.error("Corrupted database format found. Resetting database node layout.");
-                    appLocalDatabase = {};
-                }
-            }
-        }
+      <div class="mt-5">
+        <label class="font-mono text-xs block mb-2" style="color:var(--muted);">Paste Google Drive or Cloud Link here</label>
+        <input id="adminLink" type="url" placeholder="https://drive.google.com/file/d/xxxxxxxx/view?usp=sharing"
+               class="w-full glass rounded-lg px-4 py-3 text-sm font-mono outline-none" style="color:var(--text);">
+        <p class="font-mono text-[10px] mt-2" style="color:var(--muted);">Tip: in Google Drive, right-click the PDF → Share → "Anyone with the link" → Viewer, then paste that link here.</p>
+      </div>
 
-        function applyThemeStateOnLoad() {
-            const explicitUserPreference = localStorage.getItem('theme-matrix');
-            if (explicitUserPreference === 'light') {
-                document.documentElement.classList.remove('dark');
-                document.body.classList.remove('animated-bg');
-                document.body.classList.add('bg-slate-50');
-                document.getElementById('theme-icon').className = "fa-solid fa-sun text-lg text-amber-500";
-            } else {
-                // Defacto Framework Default: Dark Neon Physics Theme Configuration
-                document.documentElement.classList.add('dark');
-                document.body.classList.add('animated-bg');
-                document.body.classList.remove('bg-slate-50');
-                document.getElementById('theme-icon').className = "fa-solid fa-moon text-lg";
-            }
-        }
+      <div class="mt-5 flex items-center gap-4 flex-wrap">
+        <button id="uploadBtn" class="pulse-glow font-head font-600 text-sm px-6 py-3 rounded-xl" style="background:linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet))); color:#04050A;">
+          Preview This Link
+        </button>
+        <button id="removeBtn" class="font-head font-600 text-sm px-6 py-3 rounded-xl glass" style="color:var(--muted);">
+          Clear preview for this slot
+        </button>
+        <span id="uploadStatus" class="font-mono text-xs"></span>
+      </div>
 
-        function toggleTheme() {
-            const isTargetDark = !document.documentElement.classList.contains('dark');
-            const iconNode = document.getElementById('theme-icon');
-            
-            if (isTargetDark) {
-                document.documentElement.classList.add('dark');
-                document.body.classList.add('animated-bg');
-                document.body.classList.remove('bg-slate-50');
-                iconNode.className = "fa-solid fa-moon text-lg";
-                localStorage.setItem('theme-matrix', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.body.classList.remove('animated-bg');
-                document.body.classList.add('bg-slate-50');
-                iconNode.className = "fa-solid fa-sun text-lg text-amber-500";
-                localStorage.setItem('theme-matrix', 'light');
-            }
-        }
+      <div class="mt-5 rounded-xl p-4 font-mono text-[11px] leading-relaxed" style="background:rgba(var(--amber),0.08); border:1px solid rgba(var(--amber),0.3); color:var(--muted);">
+        ⚠️ <strong style="color:rgb(var(--amber));">Important for GitHub Pages:</strong> this panel only previews the link in <em>your</em> browser right now — it does not publish to other students, since GitHub Pages has no server or database. To make a book permanently visible to every student worldwide, copy the link and paste it directly into the <code>BOOK_LINKS</code> object near the top of the <code>&lt;script&gt;</code> section in this HTML file, then re-upload the file to GitHub. See the comments there for exact instructions.
+      </div>
+    </div>
+  </section>
 
-        // Active State Selection Processor
-        function updateActiveSelection(type, vectorValue) {
-            activeAppState[type] = vectorValue;
-            
-            // Re-render Selection Segment controls layout
-            if(type === 'version') {
-                ['HSC', 'SSC'].forEach(v => {
-                    const el = document.getElementById(btn-${v.toLowerCase()});
-                    if(v === vectorValue) {
-                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-cyan-500 to-blue-500 text-white";
-                    } else {
-                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40";
-                    }
-                });
-            } else if(type === 'medium') {
-                ['Bangla', 'English'].forEach(m => {
-                    const el = document.getElementById(btn-${m.toLowerCase()});
-                    if(m === vectorValue) {
-                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 shadow-md bg-gradient-to-r from-purple-500 to-indigo-500 text-white";
-                    } else {
-                        el.className = "py-2.5 px-4 font-bold text-sm rounded-xl transition-all duration-300 text-slate-600 dark:text-slate-400 hover:bg-slate-300/40 dark:hover:bg-slate-800/40";
-                    }
-                });
-            }
-            
-            refreshSystemUI();
-        }
+  <!-- ============ FOOTER ============ -->
+  <footer class="glass border-t px-4 sm:px-8 py-6 mt-auto" style="border-color:rgba(var(--border),0.15);">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6" viewBox="0 0 100 100"><path d="M 20,50 C 20,30 40,30 50,50 C 60,70 80,70 80,50 C 80,30 60,30 50,50 C 40,70 20,70 20,50 Z" fill="none" stroke="url(#infGrad)" stroke-width="7"/></svg>
+        <span class="font-display text-sm">PHYSICS INFINITY</span>
+      </div>
+      <p class="font-mono text-xs" style="color:var(--muted);">© <span id="year"></span> Rakib Hasan (Sir) · 01521414727 · rakib.cuet27@gmail.com</p>
+    </div>
+  </footer>
+</div>
 
-        // Grid Display Rendering Pipeline Engine
-        function refreshSystemUI() {
-            // Update Text Descriptor Matrix Badges
-            document.getElementById('current-badge').innerText = ${activeAppState.version} - ${activeAppState.medium} Medium;
-            
-            const gridContainer = document.getElementById('books-grid');
-            gridContainer.innerHTML = ''; // Purge view node buffer
+<script>
+/* ================= CONFIG ================= */
+const CATEGORIES = [
+  { slug:"basic-book",   name:"Basic Book",           icon:"📘", desc:"Foundational theory, chapter by chapter." },
+  { slug:"concept-book",  name:"Concept Book",         icon:"🧠", desc:"Deep conceptual clarity with derivations." },
+  { slug:"short-math-mcq",name:"Short Math (MCQ) Book",icon:"📐", desc:"Quick numerical problems, MCQ format." },
+  { slug:"mcq-booster",   name:"MCQ Booster",          icon:"⚡", desc:"High-yield MCQs for rapid revision." },
+  { slug:"cq-booster",    name:"CQ Booster",           icon:"✍️", desc:"Creative questions with model answers." },
+  { slug:"mega-suggestion",name:"Mega / Suggestions",  icon:"🎯", desc:"Final exam suggestions & predictions." },
+  { slug:"foundation-book",name:"Foundation Book",     icon:"🏛️", desc:"Build-up from basics for beginners." },
+];
 
-            targetBookCategories.forEach(category => {
-                // Storage Matrix Key Address Resolution
-                const targetKeyIndex = ${activeAppState.version}_${activeAppState.medium}_${category.id};
-                const resourceObject = appLocalDatabase[targetKeyIndex];
+const EQUATIONS = ["E = mc²","F = ma","λ = h/p","ΔxΔp ≥ ħ/2","∇ × E = −∂B/∂t","v = u + at","PV = nRT","q = mcΔT","F = kx","c = fλ","W = Fd cosθ"];
 
-                const gridCardNode = document.createElement('div');
-                gridCardNode.className = glassmorphism bg-physics-lightCard dark:bg-physics-darkCard border border-slate-200/70 dark:border-slate-800 rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 shadow-md hover:shadow-2xl group ${resourceObject ? 'hover:border-cyan-500/50' : 'hover:border-slate-300 dark:hover:border-slate-700'};
-                
-                let dynamicActionBtn = '';
-                if (resourceObject) {
-                    dynamicActionBtn = `
-                        <a href="${resourceObject.binaryPayload}" download="${resourceObject.metaFileName}" class="w-full mt-5 flex items-center justify-center gap-2 text-xs font-extrabold uppercase tracking-widest text-white bg-gradient-to-r ${category.color} hover:opacity-95 shadow-lg py-3.5 rounded-xl transition-all transform active:scale-95">
-                            <i class="fa-solid fa-file-arrow-down animate-bounce"></i> View / Download PDF
-                        </a>
-                    `;
-                } else {
-                    dynamicActionBtn = `
-                        <button disabled class="w-full mt-5 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800/40 cursor-not-allowed py-3.5 rounded-xl border border-slate-200/50 dark:border-slate-800">
-                            <i class="fa-solid fa-ban text-xs"></i> Not Uploaded Yet
-                        </button>
-                    `;
-                }
+/* ======================================================================
+   📌 BOOK_LINKS — THIS IS WHERE SIR PASTES THE REAL PDF LINKS.
+   ======================================================================
+   This app is hosted on GitHub Pages, which is STATIC hosting — there is
+   no server or database, so a file chosen in a browser can never sync to
+   other students' devices. The reliable fix is: host each PDF somewhere
+   public (Google Drive, Dropbox, OneDrive, etc.) and paste the shareable
+   link into this object. Because this object lives directly in the HTML
+   file, once you commit + push it to GitHub, EVERY student who opens the
+   site — on any device, anywhere in the world — sees the same links
+   instantly. No login, no sync, no backend needed.
 
-                gridCardNode.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3.5 rounded-2xl bg-gradient-to-br ${category.color} text-white shadow-lg">
-                                <i class="fa-solid ${category.icon} text-xl"></i>
-                            </div>
-                            <span class="text-[10px] uppercase tracking-widest font-extrabold px-3 py-1 rounded-full ${resourceObject ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-slate-400/10 text-slate-400 dark:text-slate-500 border border-slate-400/10'}">
-                                ${resourceObject ? '<i class="fa-solid fa-circle-check"></i> Ready' : 'Awaiting PDF'}
-                            </span>
-                        </div>
-                        <h3 class="font-display font-bold text-xl tracking-tight dark:text-white text-slate-900 group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors">${category.name}</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">${category.desc}</p>
-                        
-                        ${resourceObject ? `
-                            <div class="mt-4 p-2.5 bg-slate-100/80 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 rounded-xl flex items-center gap-2 max-w-full">
-                                <i class="fa-solid fa-paperclip text-cyan-500 flex-shrink-0"></i>
-                                <span class="text-[11px] font-mono font-medium text-slate-600 dark:text-slate-400 truncate w-full" title="${resourceObject.metaFileName}">${resourceObject.metaFileName}</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                    ${dynamicActionBtn}
-                `;
-                
-                gridContainer.appendChild(gridCardNode);
-            });
-        }
+   HOW TO ADD A LINK, STEP BY STEP:
+   1. Upload the PDF to Google Drive (or Dropbox / OneDrive).
+   2. Right-click the file → Share → change access to
+      "Anyone with the link" → set role to "Viewer" → Copy link.
+   3. Find the matching slot below (version → language → book slug)
+      and paste the link between the quotes, replacing "".
+      Example:
+        "basic-book": "https://drive.google.com/file/d/1AbCдEfG/view?usp=sharing",
+   4. Save this file and re-upload / push it to your GitHub repository.
+   5. That book's card will automatically switch to a glowing green
+      "Read PDF" button for every visitor — no other changes needed.
 
-        // Toggle Visibility parameters for Admin UI Node Layout overlay
-        function toggleAdminPanel(shouldDisplay) {
-            const targetPanel = document.getElementById('admin-panel');
-            if(shouldDisplay) {
-                targetPanel.classList.remove('hidden');
-                // Auto-align admin dropdown menu selectors to current active state views
-                document.getElementById('upload-version').value = activeAppState.version;
-                document.getElementById('upload-medium').value = activeAppState.medium;
-            } else {
-                targetPanel.classList.add('hidden');
-            }
-        }
+   The 7 book slugs are fixed (they match the CATEGORIES list above):
+   "basic-book", "concept-book", "short-math-mcq", "mcq-booster",
+   "cq-booster", "mega-suggestion", "foundation-book".
 
-        // DOM Element Listeners Configurator
-        function registerDomListeners() {
-            const fileStreamInput = document.getElementById('upload-file');
-            const fileLabelTextDisplay = document.getElementById('file-name-display');
-            
-            fileStreamInput.addEventListener('change', (event) => {
-                if (event.target.files.length > 0) {
-                    const parsedName = event.target.files[0].name;
-                    fileLabelTextDisplay.innerText = parsedName;
-                    fileLabelTextDisplay.className = "text-sm font-bold text-emerald-500 truncate max-w-xs mx-auto";
-                }
-            });
-        }
+   Leave a slot as "" (empty string) if that book isn't ready yet — its
+   card will simply show "Not uploaded yet" until you fill it in.
+   ====================================================================== */
+const BOOK_LINKS = {
+  hsc: {
+    bangla: {
+      "basic-book":      "",   // 👉 paste HSC · Bangla · Basic Book link here
+      "concept-book":    "",   // 👉 paste HSC · Bangla · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste HSC · Bangla · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste HSC · Bangla · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste HSC · Bangla · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste HSC · Bangla · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste HSC · Bangla · Foundation Book link here
+    },
+    english: {
+      "basic-book":      "",   // 👉 paste HSC · English · Basic Book link here
+      "concept-book":    "",   // 👉 paste HSC · English · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste HSC · English · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste HSC · English · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste HSC · English · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste HSC · English · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste HSC · English · Foundation Book link here
+    }
+  },
+  ssc: {
+    bangla: {
+      "basic-book":      "",   // 👉 paste SSC · Bangla · Basic Book link here
+      "concept-book":    "",   // 👉 paste SSC · Bangla · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste SSC · Bangla · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste SSC · Bangla · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste SSC · Bangla · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste SSC · Bangla · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste SSC · Bangla · Foundation Book link here
+    },
+    english: {
+      "basic-book":      "",   // 👉 paste SSC · English · Basic Book link here
+      "concept-book":    "",   // 👉 paste SSC · English · Concept Book link here
+      "short-math-mcq":  "",   // 👉 paste SSC · English · Short Math (MCQ) Book link here
+      "mcq-booster":     "",   // 👉 paste SSC · English · MCQ Booster link here
+      "cq-booster":      "",   // 👉 paste SSC · English · CQ Booster link here
+      "mega-suggestion": "",   // 👉 paste SSC · English · Mega / Suggestions link here
+      "foundation-book": ""    // 👉 paste SSC · English · Foundation Book link here
+    }
+  }
+};
 
-        // Form Commit Binary File Upload Database Mutation Handling System
-        function commitUpload(event) {
-            event.preventDefault();
+let state = { version:"hsc", lang:"bangla" };
 
-            const versionVector = document.getElementById('upload-version').value;
-            const mediumVector = document.getElementById('upload-medium').value;
-            const categoryVector = document.getElementById('upload-category').value;
-            const targetFileInput = document.getElementById('upload-file');
+/* ================= SAFE STORAGE LAYER =================
+   Browser localStorage is not available inside the Claude Artifacts
+   sandbox, so this wraps the artifact platform's persistent storage
+   (window.storage) and silently falls back to an in-memory store for
+   the current session if that call ever fails for any reason. No
+   errors or warnings are ever surfaced to the console. */
+const memoryFallback = new Map();
 
-            if (targetFileInput.files.length === 0) return;
-            const sourceFile = targetFileInput.files[0];
+const safeStorage = {
+  async get(key, shared){
+    try{
+      if(window.storage && typeof window.storage.get === 'function'){
+        const res = await window.storage.get(key, shared);
+        if(res && typeof res.value === 'string') return res.value;
+      }
+    }catch(e){ /* fall through to memory */ }
+    return memoryFallback.has(key) ? memoryFallback.get(key) : null;
+  },
+  async set(key, value, shared){
+    memoryFallback.set(key, value); // always keep an in-memory copy as a safety net
+    try{
+      if(window.storage && typeof window.storage.set === 'function'){
+        const res = await window.storage.set(key, value, shared);
+        return !!res;
+      }
+    }catch(e){ /* silently rely on memory fallback */ }
+    return true;
+  },
+  async delete(key, shared){
+    memoryFallback.delete(key);
+    try{
+      if(window.storage && typeof window.storage.delete === 'function'){
+        await window.storage.delete(key, shared);
+      }
+    }catch(e){ /* silently rely on memory fallback */ }
+    return true;
+  }
+};
 
-            // Initialize Stream Reader pipeline processing
-            const fileStreamReader = new FileReader();
-            fileStreamReader.onload = function(readerEvent) {
-                const computedBase64Payload = readerEvent.target.result;
-                const dbKeyIndex = ${versionVector}_${mediumVector}_${categoryVector};
-                
-                // Mount payload object mutation to local schema maps
-                appLocalDatabase[dbKeyIndex] = {
-                    metaFileName: sourceFile.name,
-                    binaryPayload: computedBase64Payload
-                };
+/* ================= BACKGROUND FX ================= */
+function seedEquations(){
+  const layer = document.getElementById('eqLayer');
+  layer.innerHTML = "";
+  for(let i=0;i<10;i++){
+    const el = document.createElement('div');
+    el.className = "equation-drift";
+    el.textContent = EQUATIONS[Math.floor(Math.random()*EQUATIONS.length)];
+    el.style.left = (Math.random()*90)+"vw";
+    el.style.fontSize = (14 + Math.random()*16)+"px";
+    const dur = 18 + Math.random()*20;
+    el.style.animationDuration = dur+"s";
+    el.style.animationDelay = (-Math.random()*dur)+"s";
+    layer.appendChild(el);
+  }
+}
+seedEquations();
 
-                // Commit back buffer array allocation maps natively to storage node
-                try {
-                    localStorage.setItem('physics_infinity_db', JSON.stringify(appLocalDatabase));
-                    
-                    // Direct Dynamic View Update triggering matching matrix state mapping immediately
-                    refreshSystemUI();
-                    toggleAdminPanel(false);
-                    
-                    // Clean Form Pipeline nodes
-                    document.getElementById('upload-form').reset();
-                    document.getElementById('file-name-display').innerText = "Click to map file vector stream";
-                    document.getElementById('file-name-display').className = "text-sm font-semibold text-slate-700 dark:text-slate-300";
-                } catch(quotaError) {
-                    alert("Storage Write Quota exceeded! Base64 payload footprint for this specific file size is too massive to reside in native localStorage. Try testing with an optimized or smaller PDF file blueprint (~1-3MB maximum).");
-                }
-            };
+/* ================= THEME ================= */
+const root = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+const toggleIcon = document.getElementById('toggleIcon');
+const toggleKnob = document.getElementById('toggleKnob');
 
-            fileStreamReader.readAsDataURL(sourceFile);
-        }
+function applyTheme(mode){
+  if(mode === 'light'){
+    root.classList.remove('dark'); root.classList.add('light');
+    toggleIcon.textContent = '☀️';
+    toggleKnob.style.transform = 'translateX(28px)';
+  } else {
+    root.classList.remove('light'); root.classList.add('dark');
+    toggleIcon.textContent = '🌙';
+    toggleKnob.style.transform = 'translateX(0)';
+  }
+}
 
-        // Wipe data track optimization routing
-        function clearSpecificTrack() {
-            const versionVector = document.getElementById('upload-version').value;
-            const mediumVector = document.getElementById('upload-medium').value;
-            const categoryVector = document.getElementById('upload-category').value;
-            const dbKeyIndex = ${versionVector}_${mediumVector}_${categoryVector};
+let currentTheme = 'dark';
+applyTheme(currentTheme);
 
-            if(appLocalDatabase[dbKeyIndex]) {
-                delete appLocalDatabase[dbKeyIndex];
-                localStorage.setItem('physics_infinity_db', JSON.stringify(appLocalDatabase));
-                refreshSystemUI();
-                toggleAdminPanel(false);
-                document.getElementById('upload-form').reset();
-                alert(Data vector track for ${versionVector} (${mediumVector} Medium) - Category ID: [${categoryVector}] wiped successfully.);
-            } else {
-                alert("Target target parameters specify an empty track cluster matrix already.");
-            }
-        }
-    </script>
+themeToggle.addEventListener('click', async () => {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(currentTheme);
+  await safeStorage.set('pref:theme', currentTheme, false);
+});
+
+// restore saved theme preference (non-blocking, silent on any failure)
+(async () => {
+  const saved = await safeStorage.get('pref:theme', false);
+  if(saved){ currentTheme = saved; applyTheme(currentTheme); }
+})();
+
+/* ================= VERSION / LANG TABS ================= */
+function styleVersionButtons(){
+  document.querySelectorAll('.version-btn').forEach(btn=>{
+    const active = btn.dataset.version === state.version;
+    btn.style.background = active ? 'linear-gradient(135deg, rgb(var(--cyan)), rgb(var(--violet)))' : 'transparent';
+    btn.style.color = active ? '#04050A' : 'var(--muted)';
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const active = btn.dataset.lang === state.lang;
+    btn.classList.toggle('active', active);
+    btn.style.color = active ? 'var(--text)' : 'var(--muted)';
+  });
+}
+
+document.querySelectorAll('.version-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ state.version = btn.dataset.version; styleVersionButtons(); renderBooks(); });
+});
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ state.lang = btn.dataset.lang; styleVersionButtons(); renderBooks(); });
+});
+
+/* ================= STORAGE HELPERS (session-only preview links) ================= */
+function storageKey(version, lang, slug){
+  return pdf:${version}:${lang}:${slug};
+}
+
+/* ================= BOOK GRID ================= */
+async function renderBooks(){
+  const grid = document.getElementById('bookGrid');
+  grid.innerHTML = CATEGORIES.map(c => `
+    <div class="book-card glass rounded-2xl p-5 flex flex-col justify-between animate-in" data-slug="${c.slug}">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-3xl">${c.icon}</span>
+          <span class="font-mono text-[10px] px-2 py-1 rounded-full" style="color:rgb(var(--cyan)); border:1px solid rgba(var(--cyan),0.35);">${state.version.toUpperCase()} · ${state.lang === 'bangla' ? 'বাংলা' : 'ENG'}</span>
+        </div>
+        <h3 class="font-head font-700 text-lg mb-1">${c.name}</h3>
+        <p class="text-xs sm:text-sm mb-4" style="color:var(--muted);">${c.desc}</p>
+      </div>
+      <div class="card-action">
+        <div class="spinner mx-auto"></div>
+      </div>
+    </div>
+  `).join('');
+
+  // populate each card's action area
+  for(const c of CATEGORIES){
+    const cardEl = grid.querySelector([data-slug="${c.slug}"] .card-action);
+    if(!cardEl) continue;
+
+    // 1) permanent, hardcoded link (works for every visitor worldwide)
+    let link = (BOOK_LINKS[state.version] && BOOK_LINKS[state.version][state.lang] && BOOK_LINKS[state.version][state.lang][c.slug]) || "";
+    let isPreview = false;
+
+    // 2) fall back to a session-only preview link entered in the admin panel
+    if(!link){
+      const key = storageKey(state.version, state.lang, c.slug);
+      const previewLink = await safeStorage.get(key, false);
+      if(previewLink){ link = previewLink; isPreview = true; }
+    }
+
+    if(link){
+      cardEl.innerHTML = `
+        <a href="${link}" target="_blank" rel="noopener noreferrer"
+           class="btn-read-pdf block text-center font-head font-600 text-sm px-4 py-3 rounded-xl">
+          📗 Read PDF
+        </a>
+        ${isPreview ? <p class="font-mono text-[10px] mt-2 text-center" style="color:rgb(var(--amber));">Preview only — hardcode this link in BOOK_LINKS to publish it</p> : ``}
+      `;
+    } else {
+      cardEl.innerHTML = `
+        <div class="text-center font-mono text-xs px-4 py-3 rounded-xl" style="color:var(--muted); border:1px dashed rgba(var(--border),0.3);">
+          Not uploaded yet
+        </div>
+      `;
+    }
+  }
+}
+
+/* ================= ADMIN PANEL ================= */
+const adminToggle = document.getElementById('adminToggle');
+const adminPanel = document.getElementById('adminPanel');
+const adminChevron = document.getElementById('adminChevron');
+adminToggle.addEventListener('click', ()=>{
+  adminPanel.classList.toggle('hidden');
+  adminChevron.style.transform = adminPanel.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+});
+
+const adminCategory = document.getElementById('adminCategory');
+adminCategory.innerHTML = CATEGORIES.map(c => <option value="${c.slug}">${c.name}</option>).join('');
+
+const uploadBtn = document.getElementById('uploadBtn');
+const removeBtn = document.getElementById('removeBtn');
+const uploadStatus = document.getElementById('uploadStatus');
+const adminLink = document.getElementById('adminLink');
+
+function isLikelyValidUrl(str){
+  try{ const u = new URL(str); return u.protocol === 'http:' || u.protocol === 'https:'; }
+  catch(e){ return false; }
+}
+
+uploadBtn.addEventListener('click', async ()=>{
+  const version = document.getElementById('adminVersion').value;
+  const lang = document.getElementById('adminLang').value;
+  const slug = adminCategory.value;
+  const link = adminLink.value.trim();
+
+  if(!link){
+    uploadStatus.textContent = "Paste a link first.";
+    uploadStatus.style.color = "rgb(var(--amber))";
+    return;
+  }
+  if(!isLikelyValidUrl(link)){
+    uploadStatus.textContent = "That doesn't look like a valid link.";
+    uploadStatus.style.color = "rgb(var(--amber))";
+    return;
+  }
+
+  uploadStatus.textContent = "Loading preview...";
+  uploadStatus.style.color = "var(--muted)";
+  uploadBtn.disabled = true;
+
+  const key = storageKey(version, lang, slug);
+  await safeStorage.set(key, link, false);
+
+  uploadStatus.textContent = Previewing in ${version.toUpperCase()} · ${lang}. Hardcode this link in BOOK_LINKS to publish it for everyone.;
+  uploadStatus.style.color = "rgb(var(--cyan))";
+  uploadBtn.disabled = false;
+  if(version === state.version && lang === state.lang) renderBooks();
+});
+
+removeBtn.addEventListener('click', async ()=>{
+  const version = document.getElementById('adminVersion').value;
+  const lang = document.getElementById('adminLang').value;
+  const slug = adminCategory.value;
+  const key = storageKey(version, lang, slug);
+  await safeStorage.delete(key, false);
+  adminLink.value = "";
+  uploadStatus.textContent = "Preview cleared.";
+  uploadStatus.style.color = "var(--muted)";
+  if(version === state.version && lang === state.lang) renderBooks();
+});
+
+/* ================= INIT ================= */
+document.getElementById('year').textContent = new Date().getFullYear();
+styleVersionButtons();
+renderBooks();
+</script>
 </body>
 </html>
